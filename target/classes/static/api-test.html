@@ -1,0 +1,2961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIC EDU KG - API 测试面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e4e4e7;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        header p {
+            color: #9ca3af;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .status-bar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .status-bar .token-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        .status-dot.active {
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        .sidebar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        .sidebar h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .api-group {
+            margin-bottom: 20px;
+        }
+        .api-group-title {
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .api-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #e4e4e7;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .api-btn:hover {
+            background: rgba(96, 165, 250, 0.2);
+            border-color: #60a5fa;
+        }
+        .api-btn.active {
+            background: rgba(96, 165, 250, 0.3);
+            border-color: #60a5fa;
+        }
+        .api-btn .method {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .method.get { background: #22c55e; color: #000; }
+        .method.post { background: #3b82f6; color: #fff; }
+        .method.put { background: #f59e0b; color: #000; }
+        .method.delete { background: #ef4444; color: #fff; }
+        .main-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .panel-header h2 {
+            font-size: 1.5em;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #9ca3af;
+            font-size: 0.9em;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #e4e4e7;
+            font-size: 1em;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #e4e4e7;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .response-panel {
+            margin-top: 25px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+        }
+        .response-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .response-status .code {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .response-status .code.success { background: #22c55e; color: #000; }
+        .response-status .code.error { background: #ef4444; color: #fff; }
+        .response-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow: auto;
+        }
+        .response-body pre {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .role-badge.organizer { background: #fbbf24; color: #000; }
+        .role-badge.admin { background: #a78bfa; color: #000; }
+        .role-badge.user { background: #60a5fa; color: #000; }
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: #22c55e; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 WIC EDU KG API 测试面板</h1>
+            <p>后端接口测试工具 - 支持认证、用户管理、管理员功能</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="user-info">
+                <div class="token-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="tokenStatus">未登录</span>
+                </div>
+                <span id="currentUser"></span>
+                <span class="role-badge hidden" id="roleBadge"></span>
+            </div>
+            <div>
+                <button class="btn btn-secondary" onclick="clearToken()">清除Token</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <h3>API 接口列表</h3>
+                
+                <div class="api-group">
+                    <div class="api-group-title">🔐 认证接口</div>
+                    <button class="api-btn" onclick="showPanel('login')">
+                        <span class="method post">POST</span>登录
+                    </button>
+                    <button class="api-btn" onclick="showPanel('register')">
+                        <span class="method post">POST</span>注册
+                    </button>
+                    <button class="api-btn" onclick="showPanel('me')">
+                        <span class="method get">GET</span>获取当前用户
+                    </button>
+                    <button class="api-btn" onclick="showPanel('logout')">
+                        <span class="method post">POST</span>登出
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">✅ 验证接口</div>
+                    <button class="api-btn" onclick="showPanel('checkStudentId')">
+                        <span class="method post">POST</span>检查学号
+                    </button>
+                    <button class="api-btn" onclick="showPanel('checkUsername')">
+                        <span class="method post">POST</span>检查用户名
+                    </button>
+                    <button class="api-btn" onclick="showPanel('checkEmail')">
+                        <span class="method post">POST</span>检查邮箱
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">📧 邮箱验证</div>
+                    <button class="api-btn" onclick="showPanel('sendActivationCode')">
+                        <span class="method post">POST</span>发送激活码
+                    </button>
+                    <button class="api-btn" onclick="showPanel('activate')">
+                        <span class="method post">POST</span>激活账号
+                    </button>
+                    <button class="api-btn" onclick="showPanel('sendActivationLink')">
+                        <span class="method post">POST</span>发送激活链接
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">🔑 密码管理</div>
+                    <button class="api-btn" onclick="showPanel('changePassword')">
+                        <span class="method post">POST</span>修改密码
+                    </button>
+                    <button class="api-btn" onclick="showPanel('sendResetCode')">
+                        <span class="method post">POST</span>发送重置码
+                    </button>
+                    <button class="api-btn" onclick="showPanel('resetPasswordWithCode')">
+                        <span class="method post">POST</span>重置密码
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">👤 个人资料</div>
+                    <button class="api-btn" onclick="showPanel('updateProfile')">
+                        <span class="method put">PUT</span>更新资料
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">👑 管理员接口</div>
+                    <button class="api-btn" onclick="showPanel('adminListUsers')">
+                        <span class="method get">GET</span>用户列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminGetUser')">
+                        <span class="method get">GET</span>获取用户
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminUpdateUser')">
+                        <span class="method put">PUT</span>更新用户
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminChangeRole')">
+                        <span class="method put">PUT</span>修改角色
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminChangeStatus')">
+                        <span class="method put">PUT</span>修改状态
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeleteUser')">
+                        <span class="method delete">DELETE</span>删除用户
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminBatchDelete')">
+                        <span class="method delete">DELETE</span>批量删除
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">🍜 美食模块</div>
+                    <button class="api-btn" onclick="showPanel('foodStores')">
+                        <span class="method get">GET</span>获取店铺列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodStoreDetail')">
+                        <span class="method get">GET</span>店铺详情
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodSearch')">
+                        <span class="method get">GET</span>搜索店铺
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodProducts')">
+                        <span class="method get">GET</span>店铺产品
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodProductDetail')">
+                        <span class="method get">GET</span>产品详情
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodStoreLike')">
+                        <span class="method post">POST</span>收藏店铺
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodProductLike')">
+                        <span class="method post">POST</span>收藏产品
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodComments')">
+                        <span class="method get">GET</span>产品评论
+                    </button>
+                    <button class="api-btn" onclick="showPanel('foodAddComment')">
+                        <span class="method post">POST</span>添加评论
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">🍜 美食后台管理</div>
+                    <button class="api-btn" onclick="showPanel('adminFoodStats')">
+                        <span class="method get">GET</span>统计数据
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminFoodStores')">
+                        <span class="method get">GET</span>店铺列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCreateStore')">
+                        <span class="method post">POST</span>创建店铺
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminUpdateStore')">
+                        <span class="method put">PUT</span>更新店铺
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeleteStore')">
+                        <span class="method delete">DELETE</span>删除店铺
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminFoodProducts')">
+                        <span class="method get">GET</span>商品列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCreateProduct')">
+                        <span class="method post">POST</span>创建商品
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminUpdateProduct')">
+                        <span class="method put">PUT</span>更新商品
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminProductStatus')">
+                        <span class="method put">PUT</span>商品上下架
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeleteProduct')">
+                        <span class="method delete">DELETE</span>删除商品
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminFoodComments')">
+                        <span class="method get">GET</span>评论列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCommentStatus')">
+                        <span class="method put">PUT</span>评论审核
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeleteComment')">
+                        <span class="method delete">DELETE</span>删除评论
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">🏛️ 学部模块</div>
+                    <button class="api-btn" onclick="showPanel('deptList')">
+                        <span class="method get">GET</span>学部列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('deptDetail')">
+                        <span class="method get">GET</span>学部详情
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">🏛️ 学部后台管理</div>
+                    <button class="api-btn" onclick="showPanel('adminDeptList')">
+                        <span class="method get">GET</span>所有学部
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeptUpdate')">
+                        <span class="method put">PUT</span>更新学部
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeptStatus')">
+                        <span class="method put">PUT</span>启用/禁用
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminDeptOnline')">
+                        <span class="method put">PUT</span>更新在线人数
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCounselorList')">
+                        <span class="method get">GET</span>辅导员列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCounselorAdd')">
+                        <span class="method post">POST</span>添加辅导员
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCounselorUpdate')">
+                        <span class="method put">PUT</span>更新辅导员
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminCounselorDelete')">
+                        <span class="method delete">DELETE</span>删除辅导员
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">📸 光影城院</div>
+                    <button class="api-btn" onclick="showPanel('galleryList')">
+                        <span class="method get">GET</span>图片列表
+                    </button>
+                    <button class="api-btn" onclick="showPanel('galleryFeatured')">
+                        <span class="method get">GET</span>精选图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('galleryDetail')">
+                        <span class="method get">GET</span>图片详情
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">📸 光影用户接口</div>
+                    <button class="api-btn" onclick="showPanel('galleryUpload')">
+                        <span class="method post">POST</span>上传图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('galleryLike')">
+                        <span class="method post">POST</span>点赞/取消
+                    </button>
+                    <button class="api-btn" onclick="showPanel('galleryMyImages')">
+                        <span class="method get">GET</span>我的图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('galleryDeleteMy')">
+                        <span class="method delete">DELETE</span>删除我的图片
+                    </button>
+                </div>
+
+                <div class="api-group">
+                    <div class="api-group-title">📸 光影后台管理</div>
+                    <button class="api-btn" onclick="showPanel('adminGalleryAll')">
+                        <span class="method get">GET</span>所有图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminGalleryPending')">
+                        <span class="method get">GET</span>待审核图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminGalleryReview')">
+                        <span class="method put">PUT</span>审核图片
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminGalleryFeature')">
+                        <span class="method put">PUT</span>设为精选
+                    </button>
+                    <button class="api-btn" onclick="showPanel('adminGalleryDelete')">
+                        <span class="method delete">DELETE</span>删除图片
+                    </button>
+                </div>
+            </aside>
+
+            <main class="main-panel">
+                <!-- Login Panel -->
+                <div id="panel-login" class="panel">
+                    <div class="panel-header">
+                        <h2>🔐 用户登录</h2>
+                        <span class="method post">POST /api/auth/login</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input type="text" id="login-studentId" placeholder="输入学号" value="20210001">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" id="login-password" placeholder="输入密码" value="admin123">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doLogin()">登录</button>
+                    <div class="quick-actions">
+                        <small style="color: #9ca3af;">测试账号: 20210001/admin123 (需先在数据库激活)</small>
+                    </div>
+                </div>
+
+                <!-- Register Panel -->
+                <div id="panel-register" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📝 用户注册</h2>
+                        <span class="method post">POST /api/auth/register</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input type="text" id="reg-studentId" placeholder="输入学号">
+                        </div>
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" id="reg-username" placeholder="输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" id="reg-password" placeholder="输入密码">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱 <span style="color:#ef4444;">*必填</span></label>
+                            <input type="email" id="reg-email" placeholder="输入邮箱（用于接收激活码）">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>姓名 <span style="color:#ef4444;">*必填</span></label>
+                            <input type="text" id="reg-name" placeholder="输入真实姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>院系</label>
+                            <input type="text" id="reg-department" placeholder="输入院系">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>专业</label>
+                            <input type="text" id="reg-major" placeholder="输入专业">
+                        </div>
+                        <div class="form-group">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doRegister()">注册</button>
+                    <div class="quick-actions" style="margin-top: 15px;">
+                        <small style="color: #9ca3af;">💡 注册成功后，系统会自动发送激活码到您的邮箱</small>
+                    </div>
+                </div>
+
+                <!-- Me Panel -->
+                <div id="panel-me" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👤 获取当前用户</h2>
+                        <span class="method get">GET /api/auth/me</span>
+                    </div>
+                    <p style="color: #9ca3af; margin-bottom: 15px;">获取当前登录用户的信息（需要登录）</p>
+                    <button class="btn btn-primary" onclick="doGetMe()">获取</button>
+                </div>
+
+                <!-- Logout Panel -->
+                <div id="panel-logout" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🚪 用户登出</h2>
+                        <span class="method post">POST /api/auth/logout</span>
+                    </div>
+                    <p style="color: #9ca3af; margin-bottom: 15px;">退出登录（需要登录）</p>
+                    <button class="btn btn-primary" onclick="doLogout()">登出</button>
+                </div>
+
+                <!-- Check Student ID -->
+                <div id="panel-checkStudentId" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✅ 检查学号</h2>
+                        <span class="method post">POST /api/auth/check-student-id</span>
+                    </div>
+                    <div class="form-group">
+                        <label>学号</label>
+                        <input type="text" id="check-studentId" placeholder="输入要检查的学号">
+                    </div>
+                    <button class="btn btn-primary" onclick="doCheckStudentId()">检查</button>
+                </div>
+
+                <!-- Check Username -->
+                <div id="panel-checkUsername" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✅ 检查用户名</h2>
+                        <span class="method post">POST /api/auth/check-username</span>
+                    </div>
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" id="check-username" placeholder="输入要检查的用户名">
+                    </div>
+                    <button class="btn btn-primary" onclick="doCheckUsername()">检查</button>
+                </div>
+
+                <!-- Check Email -->
+                <div id="panel-checkEmail" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✅ 检查邮箱</h2>
+                        <span class="method post">POST /api/auth/check-email</span>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="check-email" placeholder="输入要检查的邮箱">
+                    </div>
+                    <button class="btn btn-primary" onclick="doCheckEmail()">检查</button>
+                </div>
+
+                <!-- Send Activation Code -->
+                <div id="panel-sendActivationCode" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📧 发送激活码</h2>
+                        <span class="method post">POST /api/auth/send-activation-code</span>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="activation-email" placeholder="输入注册邮箱">
+                    </div>
+                    <button class="btn btn-primary" onclick="doSendActivationCode()">发送</button>
+                </div>
+
+                <!-- Activate Account -->
+                <div id="panel-activate" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✨ 激活账号</h2>
+                        <span class="method post">POST /api/auth/activate</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="activate-email" placeholder="输入注册邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label>验证码</label>
+                            <input type="text" id="activate-code" placeholder="输入6位验证码">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doActivate()">激活</button>
+                </div>
+
+                <!-- Send Activation Link -->
+                <div id="panel-sendActivationLink" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔗 发送激活链接</h2>
+                        <span class="method post">POST /api/auth/send-activation-link</span>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="activationLink-email" placeholder="输入注册邮箱">
+                    </div>
+                    <button class="btn btn-primary" onclick="doSendActivationLink()">发送</button>
+                </div>
+
+                <!-- Change Password -->
+                <div id="panel-changePassword" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔑 修改密码</h2>
+                        <span class="method post">POST /api/auth/change-password</span>
+                    </div>
+                    <div class="form-group">
+                        <label>原密码</label>
+                        <input type="password" id="change-oldPassword" placeholder="输入原密码">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>新密码</label>
+                            <input type="password" id="change-newPassword" placeholder="输入新密码">
+                        </div>
+                        <div class="form-group">
+                            <label>确认新密码</label>
+                            <input type="password" id="change-confirmPassword" placeholder="再次输入新密码">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doChangePassword()">修改</button>
+                </div>
+
+                <!-- Send Reset Code -->
+                <div id="panel-sendResetCode" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📧 发送重置码</h2>
+                        <span class="method post">POST /api/auth/send-reset-code</span>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="resetCode-email" placeholder="输入注册邮箱">
+                    </div>
+                    <button class="btn btn-primary" onclick="doSendResetCode()">发送</button>
+                </div>
+
+                <!-- Reset Password With Code -->
+                <div id="panel-resetPasswordWithCode" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔄 重置密码</h2>
+                        <span class="method post">POST /api/auth/reset-password-with-code</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="reset-email" placeholder="输入注册邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label>验证码</label>
+                            <input type="text" id="reset-code" placeholder="输入6位验证码">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>新密码</label>
+                            <input type="password" id="reset-newPassword" placeholder="输入新密码">
+                        </div>
+                        <div class="form-group">
+                            <label>确认新密码</label>
+                            <input type="password" id="reset-confirmPassword" placeholder="再次输入新密码">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doResetPasswordWithCode()">重置</button>
+                </div>
+
+                <!-- Update Profile -->
+                <div id="panel-updateProfile" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👤 更新个人资料</h2>
+                        <span class="method put">PUT /api/auth/profile</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" id="profile-name" placeholder="输入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="profile-email" placeholder="输入邮箱">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>院系</label>
+                            <input type="text" id="profile-department" placeholder="输入院系">
+                        </div>
+                        <div class="form-group">
+                            <label>专业</label>
+                            <input type="text" id="profile-major" placeholder="输入专业">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>头像URL</label>
+                        <input type="text" id="profile-avatar" placeholder="输入头像链接">
+                    </div>
+                    <div class="form-group">
+                        <label>个人简介</label>
+                        <textarea id="profile-bio" placeholder="输入个人简介"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="doUpdateProfile()">更新</button>
+                </div>
+
+                <!-- Admin List Users -->
+                <div id="panel-adminListUsers" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👥 用户列表</h2>
+                        <span class="method get">GET /api/admin/users</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>关键字</label>
+                            <input type="text" id="list-keyword" placeholder="搜索学号/用户名/姓名/邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="list-status">
+                                <option value="">全部</option>
+                                <option value="0">未激活</option>
+                                <option value="1">正常</option>
+                                <option value="2">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>角色</label>
+                            <select id="list-role">
+                                <option value="">全部</option>
+                                <option value="1">组织者</option>
+                                <option value="2">管理员</option>
+                                <option value="3">普通用户</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>每页数量</label>
+                            <input type="number" id="list-size" value="10" min="1" max="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminListUsers()">查询</button>
+                </div>
+
+                <!-- Admin Get User -->
+                <div id="panel-adminGetUser" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👤 获取用户详情</h2>
+                        <span class="method get">GET /api/admin/users/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-group">
+                        <label>用户ID</label>
+                        <input type="number" id="getUser-id" placeholder="输入用户ID">
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminGetUser()">获取</button>
+                </div>
+
+                <!-- Admin Update User -->
+                <div id="panel-adminUpdateUser" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✏️ 更新用户信息</h2>
+                        <span class="method put">PUT /api/admin/users/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-group">
+                        <label>用户ID</label>
+                        <input type="number" id="updateUser-id" placeholder="输入用户ID">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" id="updateUser-username" placeholder="新用户名">
+                        </div>
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" id="updateUser-name" placeholder="新姓名">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="updateUser-email" placeholder="新邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="updateUser-status">
+                                <option value="">不修改</option>
+                                <option value="0">未激活</option>
+                                <option value="1">正常</option>
+                                <option value="2">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>院系</label>
+                            <input type="text" id="updateUser-department" placeholder="新院系">
+                        </div>
+                        <div class="form-group">
+                            <label>专业</label>
+                            <input type="text" id="updateUser-major" placeholder="新专业">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminUpdateUser()">更新</button>
+                </div>
+
+                <!-- Admin Change Role -->
+                <div id="panel-adminChangeRole" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👑 修改用户角色</h2>
+                        <span class="method put">PUT /api/admin/users/{id}/role</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⛔ 仅组织者(ORGANIZER)可操作</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="number" id="changeRole-id" placeholder="输入用户ID">
+                        </div>
+                        <div class="form-group">
+                            <label>新角色</label>
+                            <select id="changeRole-role">
+                                <option value="1">组织者 (最高权限)</option>
+                                <option value="2">管理员</option>
+                                <option value="3">普通用户</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminChangeRole()">修改</button>
+                </div>
+
+                <!-- Admin Change Status -->
+                <div id="panel-adminChangeStatus" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔄 修改用户状态</h2>
+                        <span class="method put">PUT /api/admin/users/{id}/status</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="number" id="changeStatus-id" placeholder="输入用户ID">
+                        </div>
+                        <div class="form-group">
+                            <label>新状态</label>
+                            <select id="changeStatus-status">
+                                <option value="0">未激活</option>
+                                <option value="1">正常</option>
+                                <option value="2">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminChangeStatus()">修改</button>
+                </div>
+
+                <!-- Admin Delete User -->
+                <div id="panel-adminDeleteUser" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除用户</h2>
+                        <span class="method delete">DELETE /api/admin/users/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-group">
+                        <label>用户ID</label>
+                        <input type="number" id="deleteUser-id" placeholder="输入要删除的用户ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminDeleteUser()">删除</button>
+                </div>
+
+                <!-- Admin Batch Delete -->
+                <div id="panel-adminBatchDelete" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 批量删除用户</h2>
+                        <span class="method delete">DELETE /api/admin/users/batch</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要管理员(ADMIN)或组织者(ORGANIZER)权限</p>
+                    <div class="form-group">
+                        <label>用户ID列表 (用逗号分隔)</label>
+                        <input type="text" id="batchDelete-ids" placeholder="例如: 5,6,7">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminBatchDelete()">批量删除</button>
+                </div>
+
+                <!-- Food Stores List -->
+                <div id="panel-foodStores" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🍜 获取店铺列表</h2>
+                        <span class="method get">GET /api/food/stores</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>位置筛选</label>
+                            <select id="foodStores-location">
+                                <option value="">全部</option>
+                                <option value="canteen">一食堂</option>
+                                <option value="canteen2">二食堂</option>
+                                <option value="street">美食街</option>
+                                <option value="west-gate">西门</option>
+                                <option value="east-gate">东门</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="foodStores-page" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页条数</label>
+                            <input type="number" id="foodStores-size" value="10" min="1" max="50">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doGetFoodStores()">查询</button>
+                </div>
+
+                <!-- Food Store Detail -->
+                <div id="panel-foodStoreDetail" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🏪 店铺详情</h2>
+                        <span class="method get">GET /api/food/stores/{id}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>店铺ID</label>
+                        <input type="number" id="foodStoreDetail-id" placeholder="输入店铺ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGetFoodStoreDetail()">查询</button>
+                </div>
+
+                <!-- Food Search -->
+                <div id="panel-foodSearch" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔍 搜索店铺</h2>
+                        <span class="method get">GET /api/food/stores/search</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" id="foodSearch-keyword" placeholder="店名/美食名">
+                        </div>
+                        <div class="form-group">
+                            <label>位置</label>
+                            <select id="foodSearch-location">
+                                <option value="">全部</option>
+                                <option value="canteen">一食堂</option>
+                                <option value="canteen2">二食堂</option>
+                                <option value="street">美食街</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doSearchFoodStores()">搜索</button>
+                </div>
+
+                <!-- Food Products -->
+                <div id="panel-foodProducts" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🥘 店铺产品列表</h2>
+                        <span class="method get">GET /api/food/stores/{storeId}/products</span>
+                    </div>
+                    <div class="form-group">
+                        <label>店铺ID</label>
+                        <input type="number" id="foodProducts-storeId" placeholder="输入店铺ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGetFoodProducts()">查询</button>
+                </div>
+
+                <!-- Food Product Detail -->
+                <div id="panel-foodProductDetail" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🍲 产品详情</h2>
+                        <span class="method get">GET /api/food/products/{id}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>产品ID</label>
+                        <input type="number" id="foodProductDetail-id" placeholder="输入产品ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGetFoodProductDetail()">查询</button>
+                </div>
+
+                <!-- Food Store Like -->
+                <div id="panel-foodStoreLike" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>❤️ 收藏/取消收藏店铺</h2>
+                        <span class="method post">POST /api/food/stores/{id}/like</span>
+                    </div>
+                    <p style="color: #60a5fa; margin-bottom: 15px;">💡 需要登录，再次调用可取消收藏</p>
+                    <div class="form-group">
+                        <label>店铺ID</label>
+                        <input type="number" id="foodStoreLike-id" placeholder="输入店铺ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doFoodStoreLike()">收藏/取消</button>
+                </div>
+
+                <!-- Food Product Like -->
+                <div id="panel-foodProductLike" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>❤️ 收藏/取消收藏产品</h2>
+                        <span class="method post">POST /api/food/products/{id}/like</span>
+                    </div>
+                    <p style="color: #60a5fa; margin-bottom: 15px;">💡 需要登录，再次调用可取消收藏</p>
+                    <div class="form-group">
+                        <label>产品ID</label>
+                        <input type="number" id="foodProductLike-id" placeholder="输入产品ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doFoodProductLike()">收藏/取消</button>
+                </div>
+
+                <!-- Food Comments -->
+                <div id="panel-foodComments" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>💬 产品评论列表</h2>
+                        <span class="method get">GET /api/food/products/{id}/comments</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>产品ID</label>
+                            <input type="number" id="foodComments-productId" placeholder="输入产品ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="foodComments-page" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页条数</label>
+                            <input type="number" id="foodComments-size" value="10" min="1" max="50">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doGetFoodComments()">查询</button>
+                </div>
+
+                <!-- Food Add Comment -->
+                <div id="panel-foodAddComment" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✍️ 添加评论</h2>
+                        <span class="method post">POST /api/food/products/{id}/comments</span>
+                    </div>
+                    <p style="color: #60a5fa; margin-bottom: 15px;">💡 需要登录</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>产品ID</label>
+                            <input type="number" id="foodAddComment-productId" placeholder="输入产品ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>评分 (1-5)</label>
+                            <select id="foodAddComment-rating">
+                                <option value="5">⭐⭐⭐⭐⭐ 5分</option>
+                                <option value="4">⭐⭐⭐⭐ 4分</option>
+                                <option value="3">⭐⭐⭐ 3分</option>
+                                <option value="2">⭐⭐ 2分</option>
+                                <option value="1">⭐ 1分</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>评论内容</label>
+                        <textarea id="foodAddComment-content" placeholder="写下你的评价..." rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAddFoodComment()">提交评论</button>
+                </div>
+
+                <!-- Admin Food Stats -->
+                <div id="panel-adminFoodStats" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📊 美食模块统计</h2>
+                        <span class="method get">GET /api/admin/food/stats</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <button class="btn btn-primary" onclick="doAdminFoodStats()">获取统计</button>
+                </div>
+
+                <!-- Admin Food Stores -->
+                <div id="panel-adminFoodStores" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🏪 店铺管理列表</h2>
+                        <span class="method get">GET /api/admin/food/stores</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" id="adminStores-keyword" placeholder="店铺名称">
+                        </div>
+                        <div class="form-group">
+                            <label>位置</label>
+                            <select id="adminStores-location">
+                                <option value="">全部</option>
+                                <option value="canteen">一食堂</option>
+                                <option value="canteen2">二食堂</option>
+                                <option value="street">美食街</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminFoodStores()">查询</button>
+                </div>
+
+                <!-- Admin Create Store -->
+                <div id="panel-adminCreateStore" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>➕ 创建店铺</h2>
+                        <span class="method post">POST /api/admin/food/stores</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>店铺名称*</label>
+                            <input type="text" id="createStore-name" placeholder="输入店铺名称">
+                        </div>
+                        <div class="form-group">
+                            <label>位置*</label>
+                            <select id="createStore-location">
+                                <option value="canteen">一食堂</option>
+                                <option value="canteen2">二食堂</option>
+                                <option value="street">美食街</option>
+                                <option value="east-gate">东门</option>
+                                <option value="west-gate">西门</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="createStore-description" placeholder="店铺描述" rows="2"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>图片URL</label>
+                            <input type="text" id="createStore-image" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>营业时间</label>
+                            <input type="text" id="createStore-hours" placeholder="09:00-21:00">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCreateStore()">创建</button>
+                </div>
+
+                <!-- Admin Update Store -->
+                <div id="panel-adminUpdateStore" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✏️ 更新店铺</h2>
+                        <span class="method put">PUT /api/admin/food/stores/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-group">
+                        <label>店铺ID*</label>
+                        <input type="number" id="updateStore-id" placeholder="店铺ID" value="1">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>店铺名称</label>
+                            <input type="text" id="updateStore-name" placeholder="新名称">
+                        </div>
+                        <div class="form-group">
+                            <label>位置</label>
+                            <select id="updateStore-location">
+                                <option value="">不修改</option>
+                                <option value="canteen">一食堂</option>
+                                <option value="canteen2">二食堂</option>
+                                <option value="street">美食街</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="updateStore-description" placeholder="新描述" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminUpdateStore()">更新</button>
+                </div>
+
+                <!-- Admin Delete Store -->
+                <div id="panel-adminDeleteStore" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除店铺</h2>
+                        <span class="method delete">DELETE /api/admin/food/stores/{id}</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⚠️ 危险操作！会同时删除店铺下的所有商品</p>
+                    <div class="form-group">
+                        <label>店铺ID</label>
+                        <input type="number" id="deleteStore-id" placeholder="输入店铺ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminDeleteStore()">删除</button>
+                </div>
+
+                <!-- Admin Food Products -->
+                <div id="panel-adminFoodProducts" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🥘 商品管理列表</h2>
+                        <span class="method get">GET /api/admin/food/products</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>店铺ID</label>
+                            <input type="number" id="adminProducts-storeId" placeholder="筛选店铺">
+                        </div>
+                        <div class="form-group">
+                            <label>分类</label>
+                            <input type="text" id="adminProducts-category" placeholder="分类">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="adminProducts-status">
+                                <option value="">全部</option>
+                                <option value="1">上架</option>
+                                <option value="0">下架</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminFoodProducts()">查询</button>
+                </div>
+
+                <!-- Admin Create Product -->
+                <div id="panel-adminCreateProduct" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>➕ 创建商品</h2>
+                        <span class="method post">POST /api/admin/food/products</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>店铺ID*</label>
+                            <input type="number" id="createProduct-storeId" placeholder="所属店铺ID">
+                        </div>
+                        <div class="form-group">
+                            <label>商品名称*</label>
+                            <input type="text" id="createProduct-name" placeholder="商品名称">
+                        </div>
+                        <div class="form-group">
+                            <label>价格*</label>
+                            <input type="number" id="createProduct-price" placeholder="价格" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>分类</label>
+                            <input type="text" id="createProduct-category" placeholder="如: main, drink">
+                        </div>
+                        <div class="form-group">
+                            <label>辣度 (0-3)</label>
+                            <select id="createProduct-spiciness">
+                                <option value="0">不辣</option>
+                                <option value="1">微辣</option>
+                                <option value="2">中辣</option>
+                                <option value="3">特辣</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="createProduct-description" placeholder="商品描述" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCreateProduct()">创建</button>
+                </div>
+
+                <!-- Admin Update Product -->
+                <div id="panel-adminUpdateProduct" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✏️ 更新商品</h2>
+                        <span class="method put">PUT /api/admin/food/products/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>商品ID*</label>
+                            <input type="number" id="updateProduct-id" placeholder="商品ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>商品名称</label>
+                            <input type="text" id="updateProduct-name" placeholder="新名称">
+                        </div>
+                        <div class="form-group">
+                            <label>价格</label>
+                            <input type="number" id="updateProduct-price" placeholder="新价格" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="updateProduct-description" placeholder="新描述" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminUpdateProduct()">更新</button>
+                </div>
+
+                <!-- Admin Product Status -->
+                <div id="panel-adminProductStatus" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔄 商品上下架</h2>
+                        <span class="method put">PUT /api/admin/food/products/{id}/status</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>商品ID</label>
+                            <input type="number" id="productStatus-id" placeholder="商品ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="productStatus-status">
+                                <option value="1">上架</option>
+                                <option value="0">下架</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminProductStatus()">更新状态</button>
+                </div>
+
+                <!-- Admin Delete Product -->
+                <div id="panel-adminDeleteProduct" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除商品</h2>
+                        <span class="method delete">DELETE /api/admin/food/products/{id}</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⚠️ 危险操作！会同时删除商品的所有评论</p>
+                    <div class="form-group">
+                        <label>商品ID</label>
+                        <input type="number" id="deleteProduct-id" placeholder="输入商品ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminDeleteProduct()">删除</button>
+                </div>
+
+                <!-- Admin Food Comments -->
+                <div id="panel-adminFoodComments" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>💬 评论管理列表</h2>
+                        <span class="method get">GET /api/admin/food/comments</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>商品ID</label>
+                            <input type="number" id="adminComments-productId" placeholder="筛选商品">
+                        </div>
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="number" id="adminComments-userId" placeholder="筛选用户">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="adminComments-status">
+                                <option value="">全部</option>
+                                <option value="0">正常</option>
+                                <option value="1">已隐藏</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminFoodComments()">查询</button>
+                </div>
+
+                <!-- Admin Comment Status -->
+                <div id="panel-adminCommentStatus" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔍 评论审核</h2>
+                        <span class="method put">PUT /api/admin/food/comments/{id}/status</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">⚠️ 需要组织者(ORGANIZER)或管理员(ADMIN)权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>评论ID</label>
+                            <input type="number" id="commentStatus-id" placeholder="评论ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="commentStatus-status">
+                                <option value="0">显示</option>
+                                <option value="1">隐藏</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCommentStatus()">更新状态</button>
+                </div>
+
+                <!-- Admin Delete Comment -->
+                <div id="panel-adminDeleteComment" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除评论</h2>
+                        <span class="method delete">DELETE /api/admin/food/comments/{id}</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⚠️ 危险操作！删除后不可恢复</p>
+                    <div class="form-group">
+                        <label>评论ID</label>
+                        <input type="number" id="deleteComment-id" placeholder="输入评论ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminDeleteComment()">删除</button>
+                </div>
+
+                <!-- ==================== 学部模块面板 ==================== -->
+                
+                <!-- 学部列表 -->
+                <div id="panel-deptList" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🏛️ 学部列表</h2>
+                        <span class="method get">GET /api/departments</span>
+                    </div>
+                    <p style="margin-bottom: 15px;">获取所有启用的学部及其辅导员信息（公开接口）</p>
+                    <button class="btn btn-primary" onclick="doDeptList()">获取列表</button>
+                </div>
+
+                <!-- 学部详情 -->
+                <div id="panel-deptDetail" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🏛️ 学部详情</h2>
+                        <span class="method get">GET /api/departments/{id}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>学部ID</label>
+                        <input type="number" id="deptDetail-id" placeholder="输入学部ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doDeptDetail()">获取详情</button>
+                </div>
+
+                <!-- ==================== 学部后台管理面板 ==================== -->
+
+                <!-- 管理员-所有学部 -->
+                <div id="panel-adminDeptList" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🏛️ 所有学部（含禁用）</h2>
+                        <span class="method get">GET /api/admin/departments</span>
+                    </div>
+                    <p style="margin-bottom: 15px;">获取所有学部列表，包括禁用的（需要管理员权限）</p>
+                    <button class="btn btn-primary" onclick="doAdminDeptList()">获取列表</button>
+                </div>
+
+                <!-- 管理员-更新学部 -->
+                <div id="panel-adminDeptUpdate" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✏️ 更新学部信息</h2>
+                        <span class="method put">PUT /api/admin/departments/{id}</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学部ID *</label>
+                            <input type="number" id="updateDept-id" placeholder="学部ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>排序顺序</label>
+                            <input type="number" id="updateDept-sortOrder" placeholder="排序顺序">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>中文名称</label>
+                            <input type="text" id="updateDept-nameZh" placeholder="中文名称">
+                        </div>
+                        <div class="form-group">
+                            <label>英文名称</label>
+                            <input type="text" id="updateDept-nameEn" placeholder="英文名称">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>中文描述</label>
+                        <textarea id="updateDept-descZh" rows="2" placeholder="中文描述"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>英文描述</label>
+                        <textarea id="updateDept-descEn" rows="2" placeholder="英文描述"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>位置</label>
+                            <input type="text" id="updateDept-location" placeholder="位置">
+                        </div>
+                        <div class="form-group">
+                            <label>在线人数</label>
+                            <input type="number" id="updateDept-onlineCount" placeholder="在线人数">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>热门专业（中文）</label>
+                            <input type="text" id="updateDept-hotMajorZh" placeholder="热门专业中文">
+                        </div>
+                        <div class="form-group">
+                            <label>热门专业（英文）</label>
+                            <input type="text" id="updateDept-hotMajorEn" placeholder="热门专业英文">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminDeptUpdate()">更新学部</button>
+                </div>
+
+                <!-- 管理员-启用/禁用学部 -->
+                <div id="panel-adminDeptStatus" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🔄 启用/禁用学部</h2>
+                        <span class="method put">PUT /api/admin/departments/{id}/status</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学部ID</label>
+                            <input type="number" id="deptStatus-id" placeholder="学部ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="deptStatus-status">
+                                <option value="1">启用</option>
+                                <option value="0">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminDeptStatus()">更新状态</button>
+                </div>
+
+                <!-- 管理员-更新在线人数 -->
+                <div id="panel-adminDeptOnline" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👥 更新在线人数</h2>
+                        <span class="method put">PUT /api/admin/departments/{id}/online-count</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学部ID</label>
+                            <input type="number" id="deptOnline-id" placeholder="学部ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>在线人数</label>
+                            <input type="number" id="deptOnline-count" placeholder="在线人数" value="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminDeptOnline()">更新人数</button>
+                </div>
+
+                <!-- 管理员-辅导员列表 -->
+                <div id="panel-adminCounselorList" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>👨‍🏫 辅导员列表</h2>
+                        <span class="method get">GET /api/admin/departments/{id}/counselors</span>
+                    </div>
+                    <div class="form-group">
+                        <label>学部ID</label>
+                        <input type="number" id="counselorList-deptId" placeholder="学部ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCounselorList()">获取列表</button>
+                </div>
+
+                <!-- 管理员-添加辅导员 -->
+                <div id="panel-adminCounselorAdd" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>➕ 添加辅导员</h2>
+                        <span class="method post">POST /api/admin/departments/{id}/counselors</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学部ID *</label>
+                            <input type="number" id="addCounselor-deptId" placeholder="学部ID" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>姓名 *</label>
+                            <input type="text" id="addCounselor-name" placeholder="辅导员姓名">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>职称</label>
+                            <input type="text" id="addCounselor-title" placeholder="如：副教授、讲师">
+                        </div>
+                        <div class="form-group">
+                            <label>排序</label>
+                            <input type="number" id="addCounselor-sortOrder" placeholder="排序顺序" value="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>头像URL</label>
+                            <input type="text" id="addCounselor-avatar" placeholder="头像URL（可选）">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="addCounselor-email" placeholder="邮箱（可选）">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>电话</label>
+                        <input type="text" id="addCounselor-phone" placeholder="联系电话（可选）">
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCounselorAdd()">添加辅导员</button>
+                </div>
+
+                <!-- 管理员-更新辅导员 -->
+                <div id="panel-adminCounselorUpdate" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✏️ 更新辅导员</h2>
+                        <span class="method put">PUT /api/admin/departments/counselors/{id}</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>辅导员ID *</label>
+                            <input type="number" id="updateCounselor-id" placeholder="辅导员ID">
+                        </div>
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" id="updateCounselor-name" placeholder="辅导员姓名">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>职称</label>
+                            <input type="text" id="updateCounselor-title" placeholder="职称">
+                        </div>
+                        <div class="form-group">
+                            <label>排序</label>
+                            <input type="number" id="updateCounselor-sortOrder" placeholder="排序顺序">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>头像URL</label>
+                            <input type="text" id="updateCounselor-avatar" placeholder="头像URL">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="updateCounselor-email" placeholder="邮箱">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>电话</label>
+                            <input type="text" id="updateCounselor-phone" placeholder="联系电话">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="updateCounselor-status">
+                                <option value="1">启用</option>
+                                <option value="0">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminCounselorUpdate()">更新辅导员</button>
+                </div>
+
+                <!-- 管理员-删除辅导员 -->
+                <div id="panel-adminCounselorDelete" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除辅导员</h2>
+                        <span class="method delete">DELETE /api/admin/departments/counselors/{id}</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⚠️ 危险操作！删除后不可恢复</p>
+                    <div class="form-group">
+                        <label>辅导员ID</label>
+                        <input type="number" id="deleteCounselor-id" placeholder="输入辅导员ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminCounselorDelete()">删除</button>
+                </div>
+
+                <!-- ========== 光影城院 公开接口 ========== -->
+                <div id="panel-galleryList" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📸 图片列表</h2>
+                        <span class="method get">GET /api/gallery</span>
+                    </div>
+                    <p style="color: #9ca3af; margin-bottom: 15px;">获取已审核通过的图片列表（分页）</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="galleryList-page" placeholder="页码" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页数量</label>
+                            <input type="number" id="galleryList-size" placeholder="每页数量" value="20">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>分类筛选（可选）</label>
+                        <select id="galleryList-category">
+                            <option value="">全部分类</option>
+                            <option value="campus">校园风光</option>
+                            <option value="activity">校园活动</option>
+                            <option value="landscape">自然风景</option>
+                            <option value="life">校园生活</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="doGalleryList()">获取图片列表</button>
+                </div>
+
+                <div id="panel-galleryFeatured" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>⭐ 精选图片</h2>
+                        <span class="method get">GET /api/gallery/featured</span>
+                    </div>
+                    <p style="color: #9ca3af; margin-bottom: 15px;">获取管理员推荐的精选图片</p>
+                    <button class="btn btn-primary" onclick="doGalleryFeatured()">获取精选图片</button>
+                </div>
+
+                <div id="panel-galleryDetail" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🖼️ 图片详情</h2>
+                        <span class="method get">GET /api/gallery/{id}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>图片ID</label>
+                        <input type="number" id="galleryDetail-id" placeholder="输入图片ID" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGalleryDetail()">获取图片详情</button>
+                </div>
+
+                <!-- ========== 光影城院 用户接口 ========== -->
+                <div id="panel-galleryUpload" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📤 上传图片</h2>
+                        <span class="method post">POST /api/user/gallery/upload</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">🔒 需要登录</p>
+                    <div class="form-group">
+                        <label>选择图片文件</label>
+                        <input type="file" id="galleryUpload-file" accept="image/*">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" id="galleryUpload-title" placeholder="图片标题">
+                        </div>
+                        <div class="form-group">
+                            <label>分类</label>
+                            <select id="galleryUpload-category">
+                                <option value="campus">校园风光</option>
+                                <option value="activity">校园活动</option>
+                                <option value="landscape">自然风景</option>
+                                <option value="life">校园生活</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="galleryUpload-description" placeholder="图片描述（可选）" rows="3" style="width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px;color:#fff;resize:vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>拍摄地点</label>
+                        <input type="text" id="galleryUpload-location" placeholder="拍摄地点（可选）">
+                    </div>
+                    <div class="form-group">
+                        <label>标签（逗号分隔）</label>
+                        <input type="text" id="galleryUpload-tags" placeholder="例如: 图书馆,秋天,校园">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGalleryUpload()">上传图片</button>
+                </div>
+
+                <div id="panel-galleryLike" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>❤️ 点赞/取消点赞</h2>
+                        <span class="method post">POST /api/user/gallery/{id}/like</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">🔒 需要登录（切换点赞状态）</p>
+                    <p style="color: #94a3b8; margin-bottom: 15px; font-size: 12px;">⚠️ 只能对已审核通过的图片点赞（ID 1-8 为示例图片）</p>
+                    <div class="form-group">
+                        <label>图片ID</label>
+                        <input type="number" id="galleryLike-id" placeholder="输入图片ID（如：1）">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGalleryLike()">切换点赞状态</button>
+                </div>
+
+                <div id="panel-galleryMyImages" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📷 我的图片</h2>
+                        <span class="method get">GET /api/user/gallery/my-images</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">🔒 需要登录 - 查看我上传的所有图片</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="galleryMy-page" placeholder="页码" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页数量</label>
+                            <input type="number" id="galleryMy-size" placeholder="每页数量" value="20">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doGalleryMyImages()">查看我的图片</button>
+                </div>
+
+                <div id="panel-galleryDeleteMy" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除我的图片</h2>
+                        <span class="method delete">DELETE /api/user/gallery/{id}</span>
+                    </div>
+                    <p style="color: #fbbf24; margin-bottom: 15px;">🔒 需要登录 - 只能删除自己上传的图片</p>
+                    <div class="form-group">
+                        <label>图片ID</label>
+                        <input type="number" id="galleryDeleteMy-id" placeholder="输入图片ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doGalleryDeleteMy()">删除图片</button>
+                </div>
+
+                <!-- ========== 光影城院 管理员接口 ========== -->
+                <div id="panel-adminGalleryAll" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>📋 所有图片（管理）</h2>
+                        <span class="method get">GET /api/admin/gallery</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">🔒 需要管理员权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="adminGalleryAll-page" placeholder="页码" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页数量</label>
+                            <input type="number" id="adminGalleryAll-size" placeholder="每页数量" value="20">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>状态筛选</label>
+                        <select id="adminGalleryAll-status">
+                            <option value="">全部状态</option>
+                            <option value="0">待审核</option>
+                            <option value="1">已通过</option>
+                            <option value="2">已拒绝</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminGalleryAll()">获取所有图片</button>
+                </div>
+
+                <div id="panel-adminGalleryPending" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>⏳ 待审核图片</h2>
+                        <span class="method get">GET /api/admin/gallery/pending</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">🔒 需要管理员权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>页码</label>
+                            <input type="number" id="adminGalleryPending-page" placeholder="页码" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每页数量</label>
+                            <input type="number" id="adminGalleryPending-size" placeholder="每页数量" value="20">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminGalleryPending()">获取待审核图片</button>
+                </div>
+
+                <div id="panel-adminGalleryReview" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>✅ 审核图片</h2>
+                        <span class="method put">PUT /api/admin/gallery/{id}/approve 或 /reject</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">🔒 需要管理员权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>图片ID</label>
+                            <input type="number" id="adminReview-id" placeholder="输入图片ID">
+                        </div>
+                        <div class="form-group">
+                            <label>审核结果</label>
+                            <select id="adminReview-status">
+                                <option value="1">✅ 通过</option>
+                                <option value="2">❌ 拒绝</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>拒绝原因（拒绝时必填）</label>
+                        <input type="text" id="adminReview-reason" placeholder="拒绝原因">
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminGalleryReview()">提交审核</button>
+                </div>
+
+                <div id="panel-adminGalleryFeature" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>⭐ 设为精选</h2>
+                        <span class="method put">PUT /api/admin/gallery/{id}/featured</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">🔒 需要管理员权限</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>图片ID</label>
+                            <input type="number" id="adminFeature-id" placeholder="输入图片ID">
+                        </div>
+                        <div class="form-group">
+                            <label>精选状态</label>
+                            <select id="adminFeature-featured">
+                                <option value="true">⭐ 设为精选</option>
+                                <option value="false">取消精选</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doAdminGalleryFeature()">更新精选状态</button>
+                </div>
+
+                <div id="panel-adminGalleryDelete" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>🗑️ 删除图片（管理）</h2>
+                        <span class="method delete">DELETE /api/admin/gallery/{id}</span>
+                    </div>
+                    <p style="color: #ef4444; margin-bottom: 15px;">⚠️ 危险操作！删除后不可恢复（包括R2存储中的文件）</p>
+                    <div class="form-group">
+                        <label>图片ID</label>
+                        <input type="number" id="adminGalleryDelete-id" placeholder="输入图片ID">
+                    </div>
+                    <button class="btn btn-danger" onclick="doAdminGalleryDelete()">删除图片</button>
+                </div>
+
+                <!-- Response Panel -->
+                <div class="response-panel" id="responsePanel" style="display: none;">
+                    <div class="response-header">
+                        <span>响应结果</span>
+                        <div class="response-status">
+                            <span>状态码:</span>
+                            <span class="code" id="responseCode">200</span>
+                            <span id="responseTime"></span>
+                        </div>
+                    </div>
+                    <div class="response-body">
+                        <pre id="responseBody"></pre>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let token = localStorage.getItem('token') || '';
+        let currentUser = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTokenStatus();
+            showPanel('login');
+            if (token) {
+                doGetMe();
+            }
+        });
+
+        function updateTokenStatus() {
+            const dot = document.getElementById('statusDot');
+            const status = document.getElementById('tokenStatus');
+            const userInfo = document.getElementById('currentUser');
+            const roleBadge = document.getElementById('roleBadge');
+
+            if (token) {
+                dot.classList.add('active');
+                status.textContent = '已登录';
+                if (currentUser) {
+                    userInfo.textContent = `${currentUser.name || currentUser.username} (${currentUser.studentId})`;
+                    roleBadge.classList.remove('hidden');
+                    roleBadge.textContent = currentUser.roleName;
+                    roleBadge.className = 'role-badge';
+                    if (currentUser.role === 1) roleBadge.classList.add('organizer');
+                    else if (currentUser.role === 2) roleBadge.classList.add('admin');
+                    else roleBadge.classList.add('user');
+                }
+            } else {
+                dot.classList.remove('active');
+                status.textContent = '未登录';
+                userInfo.textContent = '';
+                roleBadge.classList.add('hidden');
+            }
+        }
+
+        function clearToken() {
+            token = '';
+            currentUser = null;
+            localStorage.removeItem('token');
+            updateTokenStatus();
+            showToast('Token已清除', 'success');
+        }
+
+        function showPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`panel-${name}`).classList.remove('hidden');
+            document.querySelectorAll('.api-btn').forEach(b => b.classList.remove('active'));
+            event.target.closest('.api-btn')?.classList.add('active');
+        }
+
+        function showResponse(data, statusCode, time) {
+            const panel = document.getElementById('responsePanel');
+            const code = document.getElementById('responseCode');
+            const body = document.getElementById('responseBody');
+            const timeEl = document.getElementById('responseTime');
+
+            panel.style.display = 'block';
+            code.textContent = statusCode;
+            code.className = 'code ' + (statusCode >= 200 && statusCode < 300 ? 'success' : 'error');
+            body.textContent = JSON.stringify(data, null, 2);
+            timeEl.textContent = `(${time}ms)`;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function apiRequest(method, endpoint, body = null, requireAuth = false) {
+            const startTime = Date.now();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (requireAuth && token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                const options = { method, headers };
+                if (body && method !== 'GET') {
+                    options.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const data = await response.json();
+                const time = Date.now() - startTime;
+
+                showResponse(data, response.status, time);
+                return { data, status: response.status };
+            } catch (error) {
+                const time = Date.now() - startTime;
+                showResponse({ error: error.message }, 500, time);
+                return { data: null, status: 500 };
+            }
+        }
+
+        // Auth APIs
+        async function doLogin() {
+            const studentId = document.getElementById('login-studentId').value;
+            const password = document.getElementById('login-password').value;
+            const { data, status } = await apiRequest('POST', '/auth/login', { studentId, password });
+            if (status === 200 && data.data) {
+                token = data.data.token;
+                currentUser = data.data.user;
+                localStorage.setItem('token', token);
+                updateTokenStatus();
+                showToast('登录成功！');
+            }
+        }
+
+        async function doRegister() {
+            const body = {
+                studentId: document.getElementById('reg-studentId').value,
+                username: document.getElementById('reg-username').value,
+                password: document.getElementById('reg-password').value,
+                email: document.getElementById('reg-email').value,
+                name: document.getElementById('reg-name').value,
+                department: document.getElementById('reg-department').value,
+                major: document.getElementById('reg-major').value
+            };
+            const { data, status } = await apiRequest('POST', '/auth/register', body);
+            if (status === 200) {
+                showToast('注册成功！激活码已发送到邮箱，请查收');
+            }
+        }
+
+        async function doGetMe() {
+            const { data, status } = await apiRequest('GET', '/auth/me', null, true);
+            if (status === 200 && data.data) {
+                currentUser = data.data;
+                updateTokenStatus();
+            }
+        }
+
+        async function doLogout() {
+            await apiRequest('POST', '/auth/logout', null, true);
+            clearToken();
+        }
+
+        async function doCheckStudentId() {
+            const studentId = document.getElementById('check-studentId').value;
+            await apiRequest('POST', `/auth/check-student-id?studentId=${encodeURIComponent(studentId)}`);
+        }
+
+        async function doCheckUsername() {
+            const username = document.getElementById('check-username').value;
+            await apiRequest('POST', `/auth/check-username?username=${encodeURIComponent(username)}`);
+        }
+
+        async function doCheckEmail() {
+            const email = document.getElementById('check-email').value;
+            await apiRequest('POST', `/auth/check-email?email=${encodeURIComponent(email)}`);
+        }
+
+        async function doSendActivationCode() {
+            const email = document.getElementById('activation-email').value;
+            await apiRequest('POST', `/auth/send-activation-code?email=${encodeURIComponent(email)}`);
+        }
+
+        async function doActivate() {
+            const body = {
+                email: document.getElementById('activate-email').value,
+                code: document.getElementById('activate-code').value
+            };
+            await apiRequest('POST', '/auth/activate', body);
+        }
+
+        async function doSendActivationLink() {
+            const email = document.getElementById('activationLink-email').value;
+            await apiRequest('POST', `/auth/send-activation-link?email=${encodeURIComponent(email)}`);
+        }
+
+        async function doChangePassword() {
+            const body = {
+                oldPassword: document.getElementById('change-oldPassword').value,
+                newPassword: document.getElementById('change-newPassword').value,
+                confirmPassword: document.getElementById('change-confirmPassword').value
+            };
+            await apiRequest('POST', '/auth/change-password', body, true);
+        }
+
+        async function doSendResetCode() {
+            const email = document.getElementById('resetCode-email').value;
+            await apiRequest('POST', `/auth/send-reset-code?email=${encodeURIComponent(email)}`);
+        }
+
+        async function doResetPasswordWithCode() {
+            const body = {
+                email: document.getElementById('reset-email').value,
+                code: document.getElementById('reset-code').value,
+                newPassword: document.getElementById('reset-newPassword').value,
+                confirmPassword: document.getElementById('reset-confirmPassword').value
+            };
+            await apiRequest('POST', '/auth/reset-password-with-code', body);
+        }
+
+        async function doUpdateProfile() {
+            const body = {};
+            const name = document.getElementById('profile-name').value;
+            const email = document.getElementById('profile-email').value;
+            const department = document.getElementById('profile-department').value;
+            const major = document.getElementById('profile-major').value;
+            const avatar = document.getElementById('profile-avatar').value;
+            const bio = document.getElementById('profile-bio').value;
+
+            if (name) body.name = name;
+            if (email) body.email = email;
+            if (department) body.department = department;
+            if (major) body.major = major;
+            if (avatar) body.avatar = avatar;
+            if (bio) body.bio = bio;
+
+            const { data, status } = await apiRequest('PUT', '/auth/profile', body, true);
+            if (status === 200 && data.data) {
+                currentUser = data.data;
+                updateTokenStatus();
+                showToast('资料更新成功！');
+            }
+        }
+
+        // Admin APIs
+        async function doAdminListUsers() {
+            const params = new URLSearchParams();
+            const keyword = document.getElementById('list-keyword').value;
+            const status = document.getElementById('list-status').value;
+            const role = document.getElementById('list-role').value;
+            const size = document.getElementById('list-size').value;
+
+            if (keyword) params.append('keyword', keyword);
+            if (status) params.append('status', status);
+            if (role) params.append('role', role);
+            if (size) params.append('size', size);
+            params.append('page', '1');
+
+            await apiRequest('GET', `/admin/users?${params.toString()}`, null, true);
+        }
+
+        async function doAdminGetUser() {
+            const id = document.getElementById('getUser-id').value;
+            await apiRequest('GET', `/admin/users/${id}`, null, true);
+        }
+
+        async function doAdminUpdateUser() {
+            const id = document.getElementById('updateUser-id').value;
+            const body = {};
+            
+            const username = document.getElementById('updateUser-username').value;
+            const name = document.getElementById('updateUser-name').value;
+            const email = document.getElementById('updateUser-email').value;
+            const status = document.getElementById('updateUser-status').value;
+            const department = document.getElementById('updateUser-department').value;
+            const major = document.getElementById('updateUser-major').value;
+
+            if (username) body.username = username;
+            if (name) body.name = name;
+            if (email) body.email = email;
+            if (status !== '') body.status = parseInt(status);
+            if (department) body.department = department;
+            if (major) body.major = major;
+
+            await apiRequest('PUT', `/admin/users/${id}`, body, true);
+        }
+
+        async function doAdminChangeRole() {
+            const id = document.getElementById('changeRole-id').value;
+            const role = document.getElementById('changeRole-role').value;
+            await apiRequest('PUT', `/admin/users/${id}/role`, { role: parseInt(role) }, true);
+        }
+
+        async function doAdminChangeStatus() {
+            const id = document.getElementById('changeStatus-id').value;
+            const status = document.getElementById('changeStatus-status').value;
+            await apiRequest('PUT', `/admin/users/${id}/status`, { status: parseInt(status) }, true);
+        }
+
+        async function doAdminDeleteUser() {
+            const id = document.getElementById('deleteUser-id').value;
+            if (confirm(`确定要删除用户 ID=${id} 吗？`)) {
+                await apiRequest('DELETE', `/admin/users/${id}`, null, true);
+            }
+        }
+
+        async function doAdminBatchDelete() {
+            const idsStr = document.getElementById('batchDelete-ids').value;
+            const ids = idsStr.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            if (ids.length === 0) {
+                showToast('请输入有效的用户ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除 ${ids.length} 个用户吗？`)) {
+                await apiRequest('DELETE', '/admin/users/batch', ids, true);
+            }
+        }
+
+        // Food APIs
+        async function doGetFoodStores() {
+            const params = new URLSearchParams();
+            const location = document.getElementById('foodStores-location').value;
+            const page = document.getElementById('foodStores-page').value;
+            const size = document.getElementById('foodStores-size').value;
+
+            if (location) params.append('location', location);
+            params.append('page', page);
+            params.append('size', size);
+
+            await apiRequest('GET', `/food/stores?${params.toString()}`);
+        }
+
+        async function doGetFoodStoreDetail() {
+            const id = document.getElementById('foodStoreDetail-id').value;
+            await apiRequest('GET', `/food/stores/${id}`);
+        }
+
+        async function doSearchFoodStores() {
+            const params = new URLSearchParams();
+            const keyword = document.getElementById('foodSearch-keyword').value;
+            const location = document.getElementById('foodSearch-location').value;
+
+            if (keyword) params.append('keyword', keyword);
+            if (location) params.append('location', location);
+
+            await apiRequest('GET', `/food/stores/search?${params.toString()}`);
+        }
+
+        async function doGetFoodProducts() {
+            const storeId = document.getElementById('foodProducts-storeId').value;
+            await apiRequest('GET', `/food/stores/${storeId}/products`);
+        }
+
+        async function doGetFoodProductDetail() {
+            const id = document.getElementById('foodProductDetail-id').value;
+            await apiRequest('GET', `/food/products/${id}`);
+        }
+
+        async function doFoodStoreLike() {
+            const id = document.getElementById('foodStoreLike-id').value;
+            const { data, status } = await apiRequest('POST', `/food/stores/${id}/like`, null, true);
+            if (status === 200) {
+                showToast(data.data ? '收藏成功！' : '已取消收藏', 'success');
+            }
+        }
+
+        async function doFoodProductLike() {
+            const id = document.getElementById('foodProductLike-id').value;
+            const { data, status } = await apiRequest('POST', `/food/products/${id}/like`, null, true);
+            if (status === 200) {
+                showToast(data.data ? '收藏成功！' : '已取消收藏', 'success');
+            }
+        }
+
+        async function doGetFoodComments() {
+            const productId = document.getElementById('foodComments-productId').value;
+            const page = document.getElementById('foodComments-page').value;
+            const size = document.getElementById('foodComments-size').value;
+            await apiRequest('GET', `/food/products/${productId}/comments?page=${page}&size=${size}`);
+        }
+
+        async function doAddFoodComment() {
+            const productId = document.getElementById('foodAddComment-productId').value;
+            const content = document.getElementById('foodAddComment-content').value;
+            const rating = document.getElementById('foodAddComment-rating').value;
+
+            if (!content) {
+                showToast('请输入评论内容', 'error');
+                return;
+            }
+
+            const body = {
+                content: content,
+                rating: parseInt(rating)
+            };
+
+            const { data, status } = await apiRequest('POST', `/food/products/${productId}/comments`, body, true);
+            if (status === 200) {
+                showToast('评论发表成功！', 'success');
+                document.getElementById('foodAddComment-content').value = '';
+            }
+        }
+
+        // ==================== 美食后台管理 APIs ====================
+
+        async function doAdminFoodStats() {
+            await apiRequest('GET', '/admin/food/stats', null, true);
+        }
+
+        async function doAdminFoodStores() {
+            const params = new URLSearchParams();
+            const keyword = document.getElementById('adminStores-keyword').value;
+            const location = document.getElementById('adminStores-location').value;
+
+            if (keyword) params.append('keyword', keyword);
+            if (location) params.append('location', location);
+            params.append('page', '1');
+            params.append('size', '10');
+
+            await apiRequest('GET', `/admin/food/stores?${params.toString()}`, null, true);
+        }
+
+        async function doAdminCreateStore() {
+            const name = document.getElementById('createStore-name').value;
+            const location = document.getElementById('createStore-location').value;
+            
+            if (!name) {
+                showToast('请输入店铺名称', 'error');
+                return;
+            }
+
+            const body = {
+                name: name,
+                location: location,
+                description: document.getElementById('createStore-description').value,
+                image: document.getElementById('createStore-image').value,
+                businessHours: document.getElementById('createStore-hours').value,
+                status: 1
+            };
+
+            const { data, status } = await apiRequest('POST', '/admin/food/stores', body, true);
+            if (status === 200) {
+                showToast('店铺创建成功！', 'success');
+            }
+        }
+
+        async function doAdminUpdateStore() {
+            const id = document.getElementById('updateStore-id').value;
+            if (!id) {
+                showToast('请输入店铺ID', 'error');
+                return;
+            }
+
+            const body = {};
+            const name = document.getElementById('updateStore-name').value;
+            const location = document.getElementById('updateStore-location').value;
+            const description = document.getElementById('updateStore-description').value;
+
+            if (name) body.name = name;
+            if (location) body.location = location;
+            if (description) body.description = description;
+
+            await apiRequest('PUT', `/admin/food/stores/${id}`, body, true);
+        }
+
+        async function doAdminDeleteStore() {
+            const id = document.getElementById('deleteStore-id').value;
+            if (!id) {
+                showToast('请输入店铺ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除店铺 ID=${id} 吗？这将同时删除店铺下的所有商品！`)) {
+                await apiRequest('DELETE', `/admin/food/stores/${id}`, null, true);
+            }
+        }
+
+        async function doAdminFoodProducts() {
+            const params = new URLSearchParams();
+            const storeId = document.getElementById('adminProducts-storeId').value;
+            const category = document.getElementById('adminProducts-category').value;
+            const status = document.getElementById('adminProducts-status').value;
+
+            if (storeId) params.append('storeId', storeId);
+            if (category) params.append('category', category);
+            if (status) params.append('status', status);
+            params.append('page', '1');
+            params.append('size', '10');
+
+            await apiRequest('GET', `/admin/food/products?${params.toString()}`, null, true);
+        }
+
+        async function doAdminCreateProduct() {
+            const storeId = document.getElementById('createProduct-storeId').value;
+            const name = document.getElementById('createProduct-name').value;
+            const price = document.getElementById('createProduct-price').value;
+
+            if (!storeId || !name || !price) {
+                showToast('请填写必填项', 'error');
+                return;
+            }
+
+            const body = {
+                storeId: parseInt(storeId),
+                name: name,
+                price: parseFloat(price),
+                description: document.getElementById('createProduct-description').value,
+                category: document.getElementById('createProduct-category').value,
+                spiciness: parseInt(document.getElementById('createProduct-spiciness').value),
+                status: 1
+            };
+
+            const { data, status } = await apiRequest('POST', '/admin/food/products', body, true);
+            if (status === 200) {
+                showToast('商品创建成功！', 'success');
+            }
+        }
+
+        async function doAdminUpdateProduct() {
+            const id = document.getElementById('updateProduct-id').value;
+            if (!id) {
+                showToast('请输入商品ID', 'error');
+                return;
+            }
+
+            const body = {};
+            const name = document.getElementById('updateProduct-name').value;
+            const price = document.getElementById('updateProduct-price').value;
+            const description = document.getElementById('updateProduct-description').value;
+
+            if (name) body.name = name;
+            if (price) body.price = parseFloat(price);
+            if (description) body.description = description;
+
+            await apiRequest('PUT', `/admin/food/products/${id}`, body, true);
+        }
+
+        async function doAdminProductStatus() {
+            const id = document.getElementById('productStatus-id').value;
+            const status = document.getElementById('productStatus-status').value;
+
+            if (!id) {
+                showToast('请输入商品ID', 'error');
+                return;
+            }
+
+            await apiRequest('PUT', `/admin/food/products/${id}/status?status=${status}`, null, true);
+        }
+
+        async function doAdminDeleteProduct() {
+            const id = document.getElementById('deleteProduct-id').value;
+            if (!id) {
+                showToast('请输入商品ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除商品 ID=${id} 吗？`)) {
+                await apiRequest('DELETE', `/admin/food/products/${id}`, null, true);
+            }
+        }
+
+        async function doAdminFoodComments() {
+            const params = new URLSearchParams();
+            const productId = document.getElementById('adminComments-productId').value;
+            const userId = document.getElementById('adminComments-userId').value;
+            const status = document.getElementById('adminComments-status').value;
+
+            if (productId) params.append('productId', productId);
+            if (userId) params.append('userId', userId);
+            if (status) params.append('status', status);
+            params.append('page', '1');
+            params.append('size', '10');
+
+            await apiRequest('GET', `/admin/food/comments?${params.toString()}`, null, true);
+        }
+
+        async function doAdminCommentStatus() {
+            const id = document.getElementById('commentStatus-id').value;
+            const status = document.getElementById('commentStatus-status').value;
+
+            if (!id) {
+                showToast('请输入评论ID', 'error');
+                return;
+            }
+
+            await apiRequest('PUT', `/admin/food/comments/${id}/status?status=${status}`, null, true);
+        }
+
+        async function doAdminDeleteComment() {
+            const id = document.getElementById('deleteComment-id').value;
+            if (!id) {
+                showToast('请输入评论ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除评论 ID=${id} 吗？`)) {
+                await apiRequest('DELETE', `/admin/food/comments/${id}`, null, true);
+            }
+        }
+
+        // ==================== 学部模块 APIs ====================
+
+        async function doDeptList() {
+            await apiRequest('GET', '/departments', null, false);
+        }
+
+        async function doDeptDetail() {
+            const id = document.getElementById('deptDetail-id').value;
+            if (!id) {
+                showToast('请输入学部ID', 'error');
+                return;
+            }
+            await apiRequest('GET', `/departments/${id}`, null, false);
+        }
+
+        // ==================== 学部后台管理 APIs ====================
+
+        async function doAdminDeptList() {
+            await apiRequest('GET', '/admin/departments', null, true);
+        }
+
+        async function doAdminDeptUpdate() {
+            const id = document.getElementById('updateDept-id').value;
+            if (!id) {
+                showToast('请输入学部ID', 'error');
+                return;
+            }
+
+            const body = {};
+            const nameZh = document.getElementById('updateDept-nameZh').value;
+            const nameEn = document.getElementById('updateDept-nameEn').value;
+            const descZh = document.getElementById('updateDept-descZh').value;
+            const descEn = document.getElementById('updateDept-descEn').value;
+            const location = document.getElementById('updateDept-location').value;
+            const hotMajorZh = document.getElementById('updateDept-hotMajorZh').value;
+            const hotMajorEn = document.getElementById('updateDept-hotMajorEn').value;
+            const onlineCount = document.getElementById('updateDept-onlineCount').value;
+            const sortOrder = document.getElementById('updateDept-sortOrder').value;
+
+            if (nameZh) body.nameZh = nameZh;
+            if (nameEn) body.nameEn = nameEn;
+            if (descZh) body.descriptionZh = descZh;
+            if (descEn) body.descriptionEn = descEn;
+            if (location) body.location = location;
+            if (hotMajorZh) body.hotMajorZh = hotMajorZh;
+            if (hotMajorEn) body.hotMajorEn = hotMajorEn;
+            if (onlineCount) body.onlineCount = parseInt(onlineCount);
+            if (sortOrder) body.sortOrder = parseInt(sortOrder);
+
+            const { data, status } = await apiRequest('PUT', `/admin/departments/${id}`, body, true);
+            if (status === 200) {
+                showToast('学部信息更新成功！', 'success');
+            }
+        }
+
+        async function doAdminDeptStatus() {
+            const id = document.getElementById('deptStatus-id').value;
+            const status = document.getElementById('deptStatus-status').value;
+
+            if (!id) {
+                showToast('请输入学部ID', 'error');
+                return;
+            }
+
+            const { data, status: resStatus } = await apiRequest('PUT', `/admin/departments/${id}/status?status=${status}`, null, true);
+            if (resStatus === 200) {
+                showToast('学部状态更新成功！', 'success');
+            }
+        }
+
+        async function doAdminDeptOnline() {
+            const id = document.getElementById('deptOnline-id').value;
+            const count = document.getElementById('deptOnline-count').value;
+
+            if (!id || !count) {
+                showToast('请填写学部ID和在线人数', 'error');
+                return;
+            }
+
+            const { data, status } = await apiRequest('PUT', `/admin/departments/${id}/online-count?count=${count}`, null, true);
+            if (status === 200) {
+                showToast('在线人数更新成功！', 'success');
+            }
+        }
+
+        async function doAdminCounselorList() {
+            const deptId = document.getElementById('counselorList-deptId').value;
+            if (!deptId) {
+                showToast('请输入学部ID', 'error');
+                return;
+            }
+            await apiRequest('GET', `/admin/departments/${deptId}/counselors`, null, true);
+        }
+
+        async function doAdminCounselorAdd() {
+            const deptId = document.getElementById('addCounselor-deptId').value;
+            const name = document.getElementById('addCounselor-name').value;
+
+            if (!deptId || !name) {
+                showToast('请填写学部ID和姓名', 'error');
+                return;
+            }
+
+            const body = {
+                name: name,
+                title: document.getElementById('addCounselor-title').value || null,
+                avatar: document.getElementById('addCounselor-avatar').value || null,
+                email: document.getElementById('addCounselor-email').value || null,
+                phone: document.getElementById('addCounselor-phone').value || null,
+                sortOrder: parseInt(document.getElementById('addCounselor-sortOrder').value) || 1
+            };
+
+            const { data, status } = await apiRequest('POST', `/admin/departments/${deptId}/counselors`, body, true);
+            if (status === 200) {
+                showToast('辅导员添加成功！', 'success');
+            }
+        }
+
+        async function doAdminCounselorUpdate() {
+            const id = document.getElementById('updateCounselor-id').value;
+            if (!id) {
+                showToast('请输入辅导员ID', 'error');
+                return;
+            }
+
+            const body = {};
+            const name = document.getElementById('updateCounselor-name').value;
+            const title = document.getElementById('updateCounselor-title').value;
+            const avatar = document.getElementById('updateCounselor-avatar').value;
+            const email = document.getElementById('updateCounselor-email').value;
+            const phone = document.getElementById('updateCounselor-phone').value;
+            const sortOrder = document.getElementById('updateCounselor-sortOrder').value;
+            const status = document.getElementById('updateCounselor-status').value;
+
+            if (name) body.name = name;
+            if (title) body.title = title;
+            if (avatar) body.avatar = avatar;
+            if (email) body.email = email;
+            if (phone) body.phone = phone;
+            if (sortOrder) body.sortOrder = parseInt(sortOrder);
+            if (status) body.status = parseInt(status);
+
+            const { data, status: resStatus } = await apiRequest('PUT', `/admin/departments/counselors/${id}`, body, true);
+            if (resStatus === 200) {
+                showToast('辅导员信息更新成功！', 'success');
+            }
+        }
+
+        async function doAdminCounselorDelete() {
+            const id = document.getElementById('deleteCounselor-id').value;
+            if (!id) {
+                showToast('请输入辅导员ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除辅导员 ID=${id} 吗？`)) {
+                const { data, status } = await apiRequest('DELETE', `/admin/departments/counselors/${id}`, null, true);
+                if (status === 200) {
+                    showToast('辅导员删除成功！', 'success');
+                }
+            }
+        }
+
+        // ========== 光影城院 公开接口 ==========
+        async function doGalleryList() {
+            const page = document.getElementById('galleryList-page').value || 1;
+            const size = document.getElementById('galleryList-size').value || 20;
+            const category = document.getElementById('galleryList-category').value;
+            
+            let url = `/gallery?page=${page}&size=${size}`;
+            if (category) url += `&category=${category}`;
+            
+            await apiRequest('GET', url);
+        }
+
+        async function doGalleryFeatured() {
+            await apiRequest('GET', '/gallery/featured');
+        }
+
+        async function doGalleryDetail() {
+            const id = document.getElementById('galleryDetail-id').value;
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            await apiRequest('GET', `/gallery/${id}`);
+        }
+
+        // ========== 光影城院 用户接口 ==========
+        async function doGalleryUpload() {
+            const fileInput = document.getElementById('galleryUpload-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('请选择图片文件', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', document.getElementById('galleryUpload-title').value || '');
+            formData.append('category', document.getElementById('galleryUpload-category').value);
+            formData.append('description', document.getElementById('galleryUpload-description').value || '');
+            formData.append('location', document.getElementById('galleryUpload-location').value || '');
+            formData.append('tags', document.getElementById('galleryUpload-tags').value || '');
+
+            const startTime = Date.now();
+            showToast('正在上传...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/user/gallery/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                const endTime = Date.now();
+                
+                displayResponse(data, response.status, endTime - startTime);
+                
+                if (response.status === 200) {
+                    showToast('图片上传成功！等待审核', 'success');
+                    fileInput.value = '';
+                }
+            } catch (error) {
+                showToast('上传失败: ' + error.message, 'error');
+            }
+        }
+
+        async function doGalleryLike() {
+            const id = document.getElementById('galleryLike-id').value;
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            const { data, status } = await apiRequest('POST', `/user/gallery/${id}/like`, null, true);
+            if (status === 200) {
+                showToast(`操作成功！当前点赞数：${data.data}`, 'success');
+            }
+        }
+
+        async function doGalleryMyImages() {
+            const page = document.getElementById('galleryMy-page').value || 1;
+            const size = document.getElementById('galleryMy-size').value || 20;
+            await apiRequest('GET', `/user/gallery/my-images?page=${page}&size=${size}`, null, true);
+        }
+
+        async function doGalleryDeleteMy() {
+            const id = document.getElementById('galleryDeleteMy-id').value;
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除图片 ID=${id} 吗？`)) {
+                const { data, status } = await apiRequest('DELETE', `/user/gallery/${id}`, null, true);
+                if (status === 200) {
+                    showToast('图片删除成功！', 'success');
+                }
+            }
+        }
+
+        // ========== 光影城院 管理员接口 ==========
+        async function doAdminGalleryAll() {
+            const page = document.getElementById('adminGalleryAll-page').value || 1;
+            const size = document.getElementById('adminGalleryAll-size').value || 20;
+            const status = document.getElementById('adminGalleryAll-status').value;
+            
+            let url = `/admin/gallery?page=${page}&size=${size}`;
+            if (status !== '') url += `&status=${status}`;
+            
+            await apiRequest('GET', url, null, true);
+        }
+
+        async function doAdminGalleryPending() {
+            const page = document.getElementById('adminGalleryPending-page').value || 1;
+            const size = document.getElementById('adminGalleryPending-size').value || 20;
+            await apiRequest('GET', `/admin/gallery/pending?page=${page}&size=${size}`, null, true);
+        }
+
+        async function doAdminGalleryReview() {
+            const id = document.getElementById('adminReview-id').value;
+            const status = document.getElementById('adminReview-status').value;
+            const reason = document.getElementById('adminReview-reason').value;
+            
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            
+            if (status === '2' && !reason) {
+                showToast('拒绝时请填写原因', 'error');
+                return;
+            }
+            
+            let url;
+            if (status === '1') {
+                url = `/admin/gallery/${id}/approve`;
+            } else {
+                url = `/admin/gallery/${id}/reject`;
+                if (reason) url += `?reason=${encodeURIComponent(reason)}`;
+            }
+            
+            const { data, status: resStatus } = await apiRequest('PUT', url, null, true);
+            if (resStatus === 200) {
+                showToast(status === '1' ? '图片已通过审核！' : '图片已被拒绝', 'success');
+            }
+        }
+
+        async function doAdminGalleryFeature() {
+            const id = document.getElementById('adminFeature-id').value;
+            const featured = document.getElementById('adminFeature-featured').value;
+            
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            
+            const { data, status } = await apiRequest('PUT', `/admin/gallery/${id}/featured?featured=${featured}`, null, true);
+            if (status === 200) {
+                showToast(featured === 'true' ? '已设为精选！' : '已取消精选', 'success');
+            }
+        }
+
+        async function doAdminGalleryDelete() {
+            const id = document.getElementById('adminGalleryDelete-id').value;
+            if (!id) {
+                showToast('请输入图片ID', 'error');
+                return;
+            }
+            if (confirm(`确定要删除图片 ID=${id} 吗？此操作将同时删除R2存储中的文件！`)) {
+                const { data, status } = await apiRequest('DELETE', `/admin/gallery/${id}`, null, true);
+                if (status === 200) {
+                    showToast('图片删除成功！', 'success');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

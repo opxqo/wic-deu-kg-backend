@@ -1,0 +1,89 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: wic-edu-kg-backend
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 20MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://sjc1.clusters.zeabur.com:20942/wic_edu_kg?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    # password: mysql_ZZ3k8A
+    password: 3u5rsT7z4S2wPaF1e9860JvtXknMdHAc
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  mail:
+    host: smtp.163.com
+    port: 465
+    username: leafoneforum@163.com
+    password: FAWyP34TfHUzmwJU
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
+    default-encoding: UTF-8
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  secret: wic-edu-kg-secret-key-2025-secure-key-must-be-long-enough
+  expiration: 86400000 # 24 hours
+  header: Authorization
+
+# 方案 1️⃣：前端 GPS 定位校验（用户体验好）
+# 用户访问时获取其 GPS 位置，判断是否在校园范围内
+
+# 方案 2️⃣：后端 IP 地址校验（更安全）
+# 校验用户 IP 是否属于校园网段或特定区域
+
+# 方案 3️⃣：校园网认证绑定
+# 要求用户必须在校园网环境下完成首次注册/绑定
+app:
+  frontend-url: http://localhost:3000
+  backend-url: http://localhost:8080
+  # 地理围栏配置（校园访问限制）
+  geofence:
+    enabled: false  # 是否启用地理围栏
+    # 武汉城市学院中心坐标（根据实际情况调整）
+    center-latitude: 30.586387705909424
+    center-longitude: 114.42900633041518
+    # 允许访问的半径（米）- 5000米约可覆盖整个校园及周边
+    radius-meters: 5000
+    # 白名单 IP 段（校园网 IP，多个用逗号分隔）
+    whitelist-ips: 127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    # 白名单接口（不需要地理校验的接口）
+    whitelist-paths: /api/auth/login,/api/auth/register,/api/auth/activate,/api/geo/check
+
+# Cloudflare R2 存储配置
+r2:
+  account-id: 57ed2c442f9b359b57645eb8726081f6
+  access-key-id: 44936d8ca16e78f5d4a5ee13ef164cd6
+  secret-access-key: b82d464cf5dcf0dee50fbb5f386b4afe6195ec1ef9bad1bb91bd75e752b6b466
+  bucket-name: wic-edu-kg
+  # R2 公开访问域名 (自定义域名)
+  public-url: https://r2.wic.edu.kg
+
+logging:
+  level:
+    com.wic.edu.kg: debug

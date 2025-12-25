@@ -27,39 +27,47 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/auth/login", 
-                    "/api/auth/register", 
-                    "/api/auth/check-student-id", 
-                    "/api/auth/check-username",
-                    "/api/auth/check-email",
-                    "/api/auth/reset-password",
-                    "/api/auth/send-activation-code",
-                    "/api/auth/activate",
-                    "/api/auth/send-reset-code",
-                    "/api/auth/reset-password-with-code",
-                    "/api/auth/send-activation-link",
-                    "/api/auth/activate-by-link"
-                ).permitAll()
-                .requestMatchers("/api/food/stores/**", "/api/food/products/*/comments").permitAll() // 美食模块公开接口
-                .requestMatchers("/api/departments/**").permitAll() // 学部模块公开接口
-                .requestMatchers("/api/gallery", "/api/gallery/featured", "/api/gallery/categories", "/api/gallery/{id}").permitAll() // 图片库公开接口
-                .requestMatchers("/ws/**", "/error").permitAll() // Allow websocket
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // Allow Swagger UI
-                .requestMatchers("/api-test.html", "/static/**", "/*.html", "/*.css", "/*.js").permitAll() // Allow static files
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/api/auth/check-student-id",
+                                "/api/auth/check-username",
+                                "/api/auth/check-email",
+                                "/api/auth/reset-password",
+                                "/api/auth/send-activation-code",
+                                "/api/auth/activate",
+                                "/api/auth/send-reset-code",
+                                "/api/auth/reset-password-with-code",
+                                "/api/auth/send-activation-link",
+                                "/api/auth/activate-by-link")
+                        .permitAll()
+                        .requestMatchers("/api/food/stores/**", "/api/food/products/*/comments").permitAll() // 美食模块公开接口
+                        .requestMatchers("/api/departments/**").permitAll() // 学部模块公开接口
+                        .requestMatchers("/api/gallery", "/api/gallery/featured", "/api/gallery/categories",
+                                "/api/gallery/{id}")
+                        .permitAll() // 图片库公开接口
+                        .requestMatchers("/ws/**", "/error").permitAll() // Allow websocket
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // Allow
+                                                                                                              // Swagger
+                                                                                                              // UI
+                        .requestMatchers("/doc.html", "/webjars/**", "/swagger-resources/**", "/favicon.ico")
+                        .permitAll() // Allow Knife4j
+                        .requestMatchers("/api-test.html", "/static/**", "/*.html", "/*.css", "/*.js").permitAll() // Allow
+                                                                                                                   // static
+                                                                                                                   // files
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

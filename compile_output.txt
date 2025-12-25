@@ -1,0 +1,329 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.wic:wic-edu-kg-backend >---------------------
+[INFO] Building WIC EDU KG Backend 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ wic-edu-kg-backend ---
+[INFO] Deleting C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ wic-edu-kg-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ wic-edu-kg-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 96 source files with javac [debug parameters release 21] to target\classes
+[INFO] 由于在类路径中发现了一个或多个处理程序，因此启用了
+  批注处理。未来发行版的 javac 可能会禁用批注处理，
+  除非至少按名称指定了一个处理程序 (-processor)，
+  或指定了搜索路径 (--processor-path, --processor-module-path)，
+  或显式启用了批注处理 (-proc:only, -proc:full)。
+  可使用 -Xlint:-options 隐藏此消息。
+  可使用 -proc:none 禁用批注处理。
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginRequest.java:[9,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginResponse.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginResponse.java:[13,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/RegisterRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/RegisterRequest.java:[11,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserVO.java:[4,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserVO.java:[16,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangePasswordRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangePasswordRequest.java:[10,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ResetPasswordRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ResetPasswordRequest.java:[11,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UpdateProfileRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UpdateProfileRequest.java:[12,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserQueryRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserQueryRequest.java:[12,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/PageResponse.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/PageResponse.java:[14,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/AdminUpdateUserRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/AdminUpdateUserRequest.java:[11,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeRoleRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeRoleRequest.java:[13,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[13,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[6,47] 程序包software.amazon.awssdk.auth.credentials不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[7,47] 程序包software.amazon.awssdk.auth.credentials不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[8,38] 程序包software.amazon.awssdk.regions不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[9,42] 程序包software.amazon.awssdk.services.s3不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[10,52] 程序包software.amazon.awssdk.services.s3.presigner不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[30,12] 找不到符号
+  符号:   类 S3Client
+  位置: 类 com.wic.edu.kg.config.R2StorageConfig
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[44,12] 找不到符号
+  符号:   类 S3Presigner
+  位置: 类 com.wic.edu.kg.config.R2StorageConfig
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[8,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[9,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[10,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[11,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[27,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[7,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[8,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[9,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[10,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[11,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[22,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[7,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[8,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[20,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[12,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[13,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[25,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/Department.java:[6,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/Department.java:[16,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/DepartmentCounselor.java:[6,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/DepartmentCounselor.java:[16,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[12,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[58,6] 找不到符号
+  符号:   类 Schema
+  位置: 类 com.wic.edu.kg.vo.DepartmentVO
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[7,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[8,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[19,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[13,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[14,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[26,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodCommentVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodCommentVO.java:[10,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/CommentRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/CommentRequest.java:[13,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/StoreQueryRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/StoreQueryRequest.java:[7,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodStoreVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodStoreVO.java:[10,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[10,2] 找不到符号
+  符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[56,6] 找不到符号
+  符号:   类 Schema
+  位置: 类 com.wic.edu.kg.vo.FoodProductVO
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[14,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[15,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[16,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[28,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[12,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[13,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[25,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[10,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[25,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[10,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[26,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[7,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[17,2] 找不到符号
+  符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[9,40] 程序包software.amazon.awssdk.core.sync不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[10,42] 程序包software.amazon.awssdk.services.s3不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[31,13] 找不到符号
+  符号:   类 S3Client
+  位置: 类 com.wic.edu.kg.service.impl.R2StorageServiceImpl
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[11,1] 程序包software.amazon.awssdk.services.s3.model不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[16,6] 找不到符号
+  符号:   类 Schema
+  位置: 类 com.wic.edu.kg.dto.ChangeStatusRequest
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.781 s
+[INFO] Finished at: 2025-12-25T16:43:46+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project wic-edu-kg-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginRequest.java:[9,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginResponse.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/LoginResponse.java:[13,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/RegisterRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/RegisterRequest.java:[11,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserVO.java:[4,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserVO.java:[16,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangePasswordRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangePasswordRequest.java:[10,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ResetPasswordRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ResetPasswordRequest.java:[11,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UpdateProfileRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UpdateProfileRequest.java:[12,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserQueryRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/UserQueryRequest.java:[12,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/PageResponse.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/PageResponse.java:[14,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/AdminUpdateUserRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/AdminUpdateUserRequest.java:[11,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeRoleRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeRoleRequest.java:[13,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[13,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[6,47] 程序包software.amazon.awssdk.auth.credentials不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[7,47] 程序包software.amazon.awssdk.auth.credentials不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[8,38] 程序包software.amazon.awssdk.regions不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[9,42] 程序包software.amazon.awssdk.services.s3不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[10,52] 程序包software.amazon.awssdk.services.s3.presigner不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[30,12] 找不到符号
+[ERROR]   符号:   类 S3Client
+[ERROR]   位置: 类 com.wic.edu.kg.config.R2StorageConfig
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/config/R2StorageConfig.java:[44,12] 找不到符号
+[ERROR]   符号:   类 S3Presigner
+[ERROR]   位置: 类 com.wic.edu.kg.config.R2StorageConfig
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[8,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[9,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[10,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[11,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AdminController.java:[27,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[7,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[8,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[9,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[10,47] 程序包io.swagger.v3.oas.annotations.responses不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[11,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/AuthController.java:[22,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[7,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[8,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/ChatController.java:[20,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[12,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[13,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentAdminController.java:[25,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/Department.java:[6,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/Department.java:[16,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/DepartmentCounselor.java:[6,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/entity/DepartmentCounselor.java:[16,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[12,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/DepartmentVO.java:[58,6] 找不到符号
+[ERROR]   符号:   类 Schema
+[ERROR]   位置: 类 com.wic.edu.kg.vo.DepartmentVO
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[7,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[8,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/DepartmentController.java:[19,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[13,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[14,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodAdminController.java:[26,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodCommentVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodCommentVO.java:[10,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/CommentRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/CommentRequest.java:[13,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/StoreQueryRequest.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/StoreQueryRequest.java:[7,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodStoreVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodStoreVO.java:[10,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[3,43] 程序包io.swagger.v3.oas.annotations.media不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[10,2] 找不到符号
+[ERROR]   符号: 类 Schema
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/vo/FoodProductVO.java:[56,6] 找不到符号
+[ERROR]   符号:   类 Schema
+[ERROR]   位置: 类 com.wic.edu.kg.vo.FoodProductVO
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[14,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[15,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[16,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/FoodController.java:[28,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[12,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[13,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryAdminController.java:[25,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[10,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryController.java:[25,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[10,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[11,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[12,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GalleryUserController.java:[26,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[6,37] 程序包io.swagger.v3.oas.annotations不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[7,42] 程序包io.swagger.v3.oas.annotations.tags不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/controller/GeoController.java:[17,2] 找不到符号
+[ERROR]   符号: 类 Tag
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[9,40] 程序包software.amazon.awssdk.core.sync不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[10,42] 程序包software.amazon.awssdk.services.s3不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[31,13] 找不到符号
+[ERROR]   符号:   类 S3Client
+[ERROR]   位置: 类 com.wic.edu.kg.service.impl.R2StorageServiceImpl
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/service/impl/R2StorageServiceImpl.java:[11,1] 程序包software.amazon.awssdk.services.s3.model不存在
+[ERROR] /C:/Code/AI/WIC.EDU.KG/wic-deu-kg-backend/src/main/java/com/wic/edu/kg/dto/ChangeStatusRequest.java:[16,6] 找不到符号
+[ERROR]   符号:   类 Schema
+[ERROR]   位置: 类 com.wic.edu.kg.dto.ChangeStatusRequest
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

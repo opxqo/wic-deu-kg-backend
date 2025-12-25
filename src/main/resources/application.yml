@@ -11,10 +11,11 @@ spring:
       max-request-size: 20MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sjc1.clusters.zeabur.com:20942/wic_edu_kg?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/wic_edu_kg?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     # password: mysql_ZZ3k8A
-    password: 3u5rsT7z4S2wPaF1e9860JvtXknMdHAc
+    # password: 3u5rsT7z4S2wPaF1e9860JvtXknMdHAc
+    password: 20050508
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -87,3 +88,29 @@ r2:
 logging:
   level:
     com.wic.edu.kg: debug
+
+# SpringDoc OpenAPI 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: '全部接口'
+      paths-to-match: '/**'
+      packages-to-scan: com.wic.edu.kg.controller
+
+# Knife4j 增强配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-swagger-models: true
+    enable-document-manage: true
+    swagger-model-name: 实体类列表
+    enable-footer: false
+    enable-footer-custom: true
+    footer-custom-content: WIC EDU KG Backend API © 2025
+

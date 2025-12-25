@@ -38,6 +38,7 @@ com\wic\edu\kg\mapper\FoodProductMapper.class
 com\wic\edu\kg\controller\FoodController.class
 com\wic\edu\kg\controller\GeoController$GeoCheckRequest.class
 com\wic\edu\kg\service\impl\VerificationCodeServiceImpl.class
+com\wic\edu\kg\config\Knife4jConfig.class
 com\wic\edu\kg\common\Result.class
 com\wic\edu\kg\entity\SysUser.class
 com\wic\edu\kg\dto\LoginResponse.class

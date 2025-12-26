@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,48 +36,69 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
 
     @Autowired
     private GalleryLikeMapper likeMapper;
-    
+
     @Autowired
     private SysUserMapper userMapper;
-    
+
     @Autowired
     private R2StorageService r2StorageService;
 
     @Override
     public Page<GalleryImageVO> getApprovedImages(String category, int page, int size, Long currentUserId) {
         Page<GalleryImage> pageParam = new Page<>(page, size);
-        
+
         LambdaQueryWrapper<GalleryImage> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryImage::getStatus, 1); // 已审核通过
         if (category != null && !category.isEmpty() && !"all".equals(category)) {
             wrapper.eq(GalleryImage::getCategory, category);
         }
         wrapper.orderByDesc(GalleryImage::getSortOrder)
-               .orderByDesc(GalleryImage::getCreatedAt);
-        
+                .orderByDesc(GalleryImage::getCreatedAt);
+
         Page<GalleryImage> result = this.page(pageParam, wrapper);
-        
-        // 获取当前用户点赞的图片ID集合
-        Set<Long> likedImageIds = getLikedImageIds(currentUserId, 
-                result.getRecords().stream().map(GalleryImage::getId).collect(Collectors.toList()));
-        
+
+        if (result.getRecords().isEmpty()) {
+            return new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        }
+
+        List<Long> imageIds = result.getRecords().stream().map(GalleryImage::getId).collect(Collectors.toList());
+        List<Long> userIds = result.getRecords().stream().map(GalleryImage::getUserId).distinct()
+                .collect(Collectors.toList());
+
+        // 批量查询点赞状态
+        Set<Long> likedImageIds = getLikedImageIds(currentUserId, imageIds);
+
+        // 批量查询用户信息
+        Map<Long, SysUser> userMap = batchGetUsers(userIds);
+
         // 转换为VO
         Page<GalleryImageVO> voPage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
         voPage.setRecords(result.getRecords().stream()
-                .map(img -> convertToVO(img, likedImageIds.contains(img.getId())))
+                .map(img -> convertToVO(img, likedImageIds.contains(img.getId()), userMap))
                 .collect(Collectors.toList()));
-        
+
         return voPage;
+    }
+
+    /**
+     * 批量查询用户信息
+     */
+    private Map<Long, SysUser> batchGetUsers(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Map.of();
+        }
+        List<SysUser> users = userMapper.selectBatchIds(userIds);
+        return users.stream().collect(Collectors.toMap(SysUser::getId, u -> u));
     }
 
     @Override
     public List<GalleryImageVO> getFeaturedImages(int limit) {
         LambdaQueryWrapper<GalleryImage> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryImage::getStatus, 1)
-               .eq(GalleryImage::getIsFeatured, 1)
-               .orderByDesc(GalleryImage::getSortOrder)
-               .last("LIMIT " + limit);
-        
+                .eq(GalleryImage::getIsFeatured, 1)
+                .orderByDesc(GalleryImage::getSortOrder)
+                .last("LIMIT " + limit);
+
         List<GalleryImage> images = this.list(wrapper);
         return images.stream()
                 .map(img -> convertToVO(img, false))
@@ -89,38 +111,38 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image == null || image.getStatus() != 1) {
             return null;
         }
-        
+
         boolean liked = false;
         if (currentUserId != null) {
             LambdaQueryWrapper<GalleryLike> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(GalleryLike::getImageId, id)
-                   .eq(GalleryLike::getUserId, currentUserId);
+                    .eq(GalleryLike::getUserId, currentUserId);
             liked = likeMapper.selectCount(wrapper) > 0;
         }
-        
+
         return convertToVO(image, liked);
     }
 
     @Override
     @Transactional
     public GalleryImage uploadImage(Long userId, MultipartFile file, String title, String description,
-                                   String location, String category, String tags) {
+            String location, String category, String tags) {
         // 验证文件类型
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new RuntimeException("只支持上传图片文件");
         }
-        
+
         // 验证文件大小 (最大10MB)
         if (file.getSize() > 10 * 1024 * 1024) {
             throw new RuntimeException("图片大小不能超过10MB");
         }
-        
+
         // 上传到R2
         String[] urls = r2StorageService.uploadImageWithThumbnail(file, "gallery");
         String imageUrl = urls[0];
         String thumbnailUrl = urls[1];
-        
+
         // 获取图片尺寸
         Integer width = null, height = null;
         try {
@@ -132,7 +154,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         } catch (Exception e) {
             log.warn("Failed to read image dimensions: {}", e.getMessage());
         }
-        
+
         // 创建记录
         GalleryImage image = new GalleryImage();
         image.setUserId(userId);
@@ -154,7 +176,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         image.setSortOrder(0);
         image.setCreatedAt(LocalDateTime.now());
         image.setUpdatedAt(LocalDateTime.now());
-        
+
         this.save(image);
         return image;
     }
@@ -162,18 +184,18 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
     @Override
     public Page<GalleryImageVO> getUserImages(Long userId, int page, int size) {
         Page<GalleryImage> pageParam = new Page<>(page, size);
-        
+
         LambdaQueryWrapper<GalleryImage> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryImage::getUserId, userId)
-               .orderByDesc(GalleryImage::getCreatedAt);
-        
+                .orderByDesc(GalleryImage::getCreatedAt);
+
         Page<GalleryImage> result = this.page(pageParam, wrapper);
-        
+
         Page<GalleryImageVO> voPage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
         voPage.setRecords(result.getRecords().stream()
                 .map(img -> convertToVO(img, false))
                 .collect(Collectors.toList()));
-        
+
         return voPage;
     }
 
@@ -187,7 +209,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (!image.getUserId().equals(userId)) {
             throw new RuntimeException("无权删除此图片");
         }
-        
+
         // 删除R2文件
         if (image.getImageUrl() != null) {
             r2StorageService.deleteFile(image.getImageUrl());
@@ -195,12 +217,12 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image.getThumbnailUrl() != null) {
             r2StorageService.deleteFile(image.getThumbnailUrl());
         }
-        
+
         // 删除点赞记录
         LambdaQueryWrapper<GalleryLike> likeWrapper = new LambdaQueryWrapper<>();
         likeWrapper.eq(GalleryLike::getImageId, imageId);
         likeMapper.delete(likeWrapper);
-        
+
         // 删除图片记录
         this.removeById(imageId);
     }
@@ -212,20 +234,20 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image == null || image.getStatus() != 1) {
             throw new RuntimeException("图片不存在或未审核");
         }
-        
+
         LambdaQueryWrapper<GalleryLike> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryLike::getImageId, imageId)
-               .eq(GalleryLike::getUserId, userId);
-        
+                .eq(GalleryLike::getUserId, userId);
+
         GalleryLike existingLike = likeMapper.selectOne(wrapper);
-        
+
         if (existingLike != null) {
             // 取消点赞
             likeMapper.deleteById(existingLike.getId());
             // 减少点赞数
             LambdaUpdateWrapper<GalleryImage> updateWrapper = new LambdaUpdateWrapper<>();
             updateWrapper.eq(GalleryImage::getId, imageId)
-                        .setSql("like_count = like_count - 1");
+                    .setSql("like_count = like_count - 1");
             this.update(updateWrapper);
             return image.getLikeCount() - 1;
         } else {
@@ -238,7 +260,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
             // 增加点赞数
             LambdaUpdateWrapper<GalleryImage> updateWrapper = new LambdaUpdateWrapper<>();
             updateWrapper.eq(GalleryImage::getId, imageId)
-                        .setSql("like_count = like_count + 1");
+                    .setSql("like_count = like_count + 1");
             this.update(updateWrapper);
             return image.getLikeCount() + 1;
         }
@@ -248,7 +270,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
     public void incrementViewCount(Long imageId) {
         LambdaUpdateWrapper<GalleryImage> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(GalleryImage::getId, imageId)
-                    .setSql("view_count = view_count + 1");
+                .setSql("view_count = view_count + 1");
         this.update(updateWrapper);
     }
 
@@ -257,13 +279,13 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
     @Override
     public Page<GalleryImage> getAllImages(Integer status, int page, int size) {
         Page<GalleryImage> pageParam = new Page<>(page, size);
-        
+
         LambdaQueryWrapper<GalleryImage> wrapper = new LambdaQueryWrapper<>();
         if (status != null) {
             wrapper.eq(GalleryImage::getStatus, status);
         }
         wrapper.orderByDesc(GalleryImage::getCreatedAt);
-        
+
         return this.page(pageParam, wrapper);
     }
 
@@ -274,13 +296,13 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image == null) {
             throw new RuntimeException("图片不存在");
         }
-        
+
         image.setStatus(approved ? 1 : 2);
         image.setRejectReason(approved ? null : rejectReason);
         image.setReviewedBy(reviewerId);
         image.setReviewedAt(LocalDateTime.now());
         image.setUpdatedAt(LocalDateTime.now());
-        
+
         this.updateById(image);
     }
 
@@ -290,7 +312,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image == null) {
             throw new RuntimeException("图片不存在");
         }
-        
+
         image.setIsFeatured(featured ? 1 : 0);
         image.setUpdatedAt(LocalDateTime.now());
         this.updateById(image);
@@ -303,7 +325,7 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image == null) {
             return;
         }
-        
+
         // 删除R2文件
         if (image.getImageUrl() != null) {
             r2StorageService.deleteFile(image.getImageUrl());
@@ -311,12 +333,12 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (image.getThumbnailUrl() != null) {
             r2StorageService.deleteFile(image.getThumbnailUrl());
         }
-        
+
         // 删除点赞记录
         LambdaQueryWrapper<GalleryLike> likeWrapper = new LambdaQueryWrapper<>();
         likeWrapper.eq(GalleryLike::getImageId, imageId);
         likeMapper.delete(likeWrapper);
-        
+
         // 删除图片记录
         this.removeById(imageId);
     }
@@ -330,20 +352,20 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         if (userId == null || imageIds.isEmpty()) {
             return Set.of();
         }
-        
+
         LambdaQueryWrapper<GalleryLike> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryLike::getUserId, userId)
-               .in(GalleryLike::getImageId, imageIds);
-        
+                .in(GalleryLike::getImageId, imageIds);
+
         return likeMapper.selectList(wrapper).stream()
                 .map(GalleryLike::getImageId)
                 .collect(Collectors.toSet());
     }
 
     /**
-     * 转换为VO
+     * 转换为VO (使用批量查询的用户Map)
      */
-    private GalleryImageVO convertToVO(GalleryImage image, boolean liked) {
+    private GalleryImageVO convertToVO(GalleryImage image, boolean liked, Map<Long, SysUser> userMap) {
         GalleryImageVO vo = new GalleryImageVO();
         vo.setId(image.getId());
         vo.setTitle(image.getTitle());
@@ -360,9 +382,9 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
         vo.setLiked(liked);
         vo.setFeatured(image.getIsFeatured() == 1);
         vo.setCreatedAt(image.getCreatedAt());
-        
-        // 获取上传者信息
-        SysUser user = userMapper.selectById(image.getUserId());
+
+        // 从批量查询结果获取上传者信息
+        SysUser user = userMap.get(image.getUserId());
         if (user != null) {
             GalleryImageVO.UserInfo userInfo = new GalleryImageVO.UserInfo();
             userInfo.setId(user.getId());
@@ -370,7 +392,15 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
             userInfo.setAvatar(user.getAvatar());
             vo.setUploader(userInfo);
         }
-        
+
         return vo;
+    }
+
+    /**
+     * 转换为VO (单条查询用户, 用于单图片场景)
+     */
+    private GalleryImageVO convertToVO(GalleryImage image, boolean liked) {
+        Map<Long, SysUser> userMap = batchGetUsers(List.of(image.getUserId()));
+        return convertToVO(image, liked, userMap);
     }
 }

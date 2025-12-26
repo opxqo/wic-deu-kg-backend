@@ -13,7 +13,7 @@ import com.wic.edu.kg.vo.DepartmentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,21 +30,61 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     @Override
     public List<DepartmentVO> getAllDepartments() {
-        // 查询所有启用的学部
+        // 1. 查询所有启用的学部
         List<Department> departments = this.list(new LambdaQueryWrapper<Department>()
                 .eq(Department::getStatus, 1)
                 .orderByAsc(Department::getSortOrder));
 
-        // 转换为VO并填充辅导员信息
+        if (departments.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> deptIds = departments.stream().map(Department::getId).collect(Collectors.toList());
+
+        // 2. 批量查询用户数 (一次查询)
+        Map<Long, Long> userCountMap = batchGetUserCounts(deptIds);
+
+        // 3. 批量查询辅导员 (一次查询)
+        Map<Long, List<DepartmentCounselor>> counselorMap = batchGetCounselors(deptIds);
+
+        // 4. 组装VO
         return departments.stream()
-                .map(this::convertToVO)
+                .map(dept -> convertToVO(dept, userCountMap, counselorMap))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 批量查询各学部用户数
+     */
+    private Map<Long, Long> batchGetUserCounts(List<Long> deptIds) {
+        List<SysUser> users = sysUserMapper.selectList(new LambdaQueryWrapper<SysUser>()
+                .in(SysUser::getDepartmentId, deptIds)
+                .select(SysUser::getDepartmentId));
+        return users.stream()
+                .filter(u -> u.getDepartmentId() != null)
+                .collect(Collectors.groupingBy(SysUser::getDepartmentId, Collectors.counting()));
+    }
+
+    /**
+     * 批量查询各学部辅导员
+     */
+    private Map<Long, List<DepartmentCounselor>> batchGetCounselors(List<Long> deptIds) {
+        List<DepartmentCounselor> counselors = counselorService.list(new LambdaQueryWrapper<DepartmentCounselor>()
+                .in(DepartmentCounselor::getDepartmentId, deptIds)
+                .eq(DepartmentCounselor::getStatus, 1)
+                .orderByAsc(DepartmentCounselor::getSortOrder));
+        return counselors.stream()
+                .collect(Collectors.groupingBy(DepartmentCounselor::getDepartmentId));
     }
 
     @Override
     public DepartmentVO getDepartmentById(Long id) {
         Department department = this.getById(id);
-        return department != null ? convertToVO(department) : null;
+        if (department == null)
+            return null;
+        return convertToVO(department,
+                batchGetUserCounts(Collections.singletonList(id)),
+                batchGetCounselors(Collections.singletonList(id)));
     }
 
     @Override
@@ -52,7 +92,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         Department department = this.getOne(new LambdaQueryWrapper<Department>()
                 .eq(Department::getCode, code)
                 .eq(Department::getStatus, 1));
-        return department != null ? convertToVO(department) : null;
+        if (department == null)
+            return null;
+        return convertToVO(department,
+                batchGetUserCounts(Collections.singletonList(department.getId())),
+                batchGetCounselors(Collections.singletonList(department.getId())));
     }
 
     @Override
@@ -62,9 +106,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
     /**
-     * 转换为VO对象
+     * 转换为VO对象 (使用批量查询结果)
      */
-    private DepartmentVO convertToVO(Department department) {
+    private DepartmentVO convertToVO(Department department,
+            Map<Long, Long> userCountMap,
+            Map<Long, List<DepartmentCounselor>> counselorMap) {
         DepartmentVO vo = new DepartmentVO();
         vo.setId(department.getId());
         vo.setCode(department.getCode());
@@ -76,12 +122,12 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         vo.setLocation(department.getLocation());
         vo.setHotMajorZh(department.getHotMajorZh());
         vo.setHotMajorEn(department.getHotMajorEn());
-        // 动态计算用户数
-        vo.setOnlineCount(getUserCountByDepartmentId(department.getId()));
+        // 从批量查询结果获取用户数
+        vo.setOnlineCount(userCountMap.getOrDefault(department.getId(), 0L).intValue());
         vo.setSortOrder(department.getSortOrder());
 
-        // 获取辅导员列表
-        List<DepartmentCounselor> counselors = counselorService.getCounselorsByDepartmentId(department.getId());
+        // 从批量查询结果获取辅导员列表
+        List<DepartmentCounselor> counselors = counselorMap.getOrDefault(department.getId(), Collections.emptyList());
         vo.setCounselors(counselors.stream().map(c -> {
             DepartmentVO.CounselorInfo info = new DepartmentVO.CounselorInfo();
             info.setId(c.getId());

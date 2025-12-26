@@ -15,9 +15,9 @@ import java.util.List;
 public interface SeniorMessageService extends IService<SeniorMessage> {
 
     /**
-     * 获取留言列表
+     * 获取留言列表（支持关键词搜索）
      */
-    Page<SeniorMessageVO> getMessages(int page, int size, Long currentUserId);
+    Page<SeniorMessageVO> getMessages(int page, int size, String keyword, Long currentUserId);
 
     /**
      * 发布留言
@@ -33,6 +33,11 @@ public interface SeniorMessageService extends IService<SeniorMessage> {
      * 点赞/取消点赞
      */
     int toggleLike(Long userId, Long messageId);
+
+    /**
+     * 获取用户自己的留言列表
+     */
+    Page<SeniorMessageVO> getUserMessages(Long userId, int page, int size);
 
     /**
      * 获取可用字体列表

@@ -36,12 +36,21 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
     private MessageFontMapper fontMapper;
 
     @Override
-    public Page<SeniorMessageVO> getMessages(int page, int size, Long currentUserId) {
+    public Page<SeniorMessageVO> getMessages(int page, int size, String keyword, Long currentUserId) {
         // 1. 查询已发布的留言
         Page<SeniorMessage> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<SeniorMessage> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SeniorMessage::getStatus, 1)
-                .orderByDesc(SeniorMessage::getCreatedAt);
+        wrapper.eq(SeniorMessage::getStatus, 1);
+
+        // 关键词搜索（内容或署名）
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            wrapper.and(w -> w
+                    .like(SeniorMessage::getContent, keyword)
+                    .or()
+                    .like(SeniorMessage::getSignature, keyword));
+        }
+
+        wrapper.orderByDesc(SeniorMessage::getCreatedAt);
         Page<SeniorMessage> result = this.page(pageParam, wrapper);
 
         if (result.getRecords().isEmpty()) {
@@ -135,6 +144,34 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
                     .setSql("like_count = like_count + 1"));
             return message.getLikeCount() + 1;
         }
+    }
+
+    @Override
+    public Page<SeniorMessageVO> getUserMessages(Long userId, int page, int size) {
+        Page<SeniorMessage> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<SeniorMessage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SeniorMessage::getUserId, userId)
+                .orderByDesc(SeniorMessage::getCreatedAt);
+        Page<SeniorMessage> result = this.page(pageParam, wrapper);
+
+        if (result.getRecords().isEmpty()) {
+            return new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        }
+
+        List<Long> messageIds = result.getRecords().stream()
+                .map(SeniorMessage::getId).collect(Collectors.toList());
+        List<Long> fontIds = result.getRecords().stream()
+                .map(SeniorMessage::getFontId).distinct().collect(Collectors.toList());
+
+        Set<Long> likedIds = batchGetLikedIds(userId, messageIds);
+        Map<Long, MessageFont> fontMap = batchGetFonts(fontIds);
+
+        Page<SeniorMessageVO> voPage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        voPage.setRecords(result.getRecords().stream()
+                .map(msg -> convertToVO(msg, likedIds.contains(msg.getId()), fontMap))
+                .collect(Collectors.toList()));
+
+        return voPage;
     }
 
     @Override

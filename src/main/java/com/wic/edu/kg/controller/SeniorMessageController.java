@@ -39,13 +39,14 @@ public class SeniorMessageController {
     // ========== 公开接口 ==========
 
     @GetMapping("/api/public/messages")
-    @Operation(summary = "获取留言列表", description = "获取已发布的留言列表，支持分页")
+    @Operation(summary = "获取留言列表", description = "获取已发布的留言列表，支持分页和关键词搜索")
     public Result<Page<SeniorMessageVO>> getMessages(
             @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "搜索关键词") @RequestParam(required = false) String keyword,
             @RequestHeader(value = "Authorization", required = false) String authorization) {
         Long userId = extractUserId(authorization);
-        Page<SeniorMessageVO> result = messageService.getMessages(page, size, userId);
+        Page<SeniorMessageVO> result = messageService.getMessages(page, size, keyword, userId);
         return Result.success(result);
     }
 
@@ -53,6 +54,18 @@ public class SeniorMessageController {
     @Operation(summary = "获取可用字体列表", description = "获取所有可用的字体选项")
     public Result<List<MessageFont>> getFonts() {
         return Result.success(messageService.getAvailableFonts());
+    }
+
+    @GetMapping("/api/public/messages/search")
+    @Operation(summary = "搜索留言", description = "根据关键词搜索留言内容或署名")
+    public Result<Page<SeniorMessageVO>> searchMessages(
+            @Parameter(description = "搜索关键词", required = true) @RequestParam String keyword,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        Long userId = extractUserId(authorization);
+        Page<SeniorMessageVO> result = messageService.getMessages(page, size, keyword, userId);
+        return Result.success(result);
     }
 
     // ========== 用户接口（需登录） ==========
@@ -86,6 +99,17 @@ public class SeniorMessageController {
         Long userId = getUserId(authorization);
         int likeCount = messageService.toggleLike(userId, id);
         return Result.success(likeCount);
+    }
+
+    @GetMapping("/api/messages/my")
+    @Operation(summary = "获取我的留言", description = "获取当前用户发布的留言列表")
+    public Result<Page<SeniorMessageVO>> getMyMessages(
+            @RequestHeader("Authorization") String authorization,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
+        Long userId = getUserId(authorization);
+        Page<SeniorMessageVO> result = messageService.getUserMessages(userId, page, size);
+        return Result.success(result);
     }
 
     // ========== 辅助方法 ==========

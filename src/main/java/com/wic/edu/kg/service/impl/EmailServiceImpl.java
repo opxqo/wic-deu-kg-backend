@@ -14,6 +14,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -24,14 +27,14 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${spring.mail.username}")
     private String fromEmail;
-    
+
     @Value("${app.backend-url}")
     private String backendUrl;
 
     @Override
     @Async
     public void sendVerificationCode(String to, String code) {
-        String subject = "【WIC教育平台】验证码";
+        String subject = "【武汉城市学院】验证码通知";
         String content = buildVerificationCodeHtml(code);
         sendHtmlEmail(to, subject, content);
     }
@@ -39,15 +42,15 @@ public class EmailServiceImpl implements EmailService {
     @Override
     @Async
     public void sendActivationEmail(String to, String code, String username) {
-        String subject = "【WIC教育平台】账号激活";
+        String subject = "【武汉城市学院】账号激活通知";
         String content = buildActivationEmailHtml(code, username);
         sendHtmlEmail(to, subject, content);
     }
-    
+
     @Override
     @Async
     public void sendActivationLinkEmail(String to, String token, String username) {
-        String subject = "【WIC教育平台】账号激活 - 点击链接立即激活";
+        String subject = "【武汉城市学院】账号激活通知";
         String activationLink = backendUrl + "/api/auth/activate-by-link?token=" + token;
         String content = buildActivationLinkEmailHtml(activationLink, username);
         sendHtmlEmail(to, subject, content);
@@ -56,7 +59,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     @Async
     public void sendPasswordResetEmail(String to, String code, String username) {
-        String subject = "【WIC教育平台】密码重置";
+        String subject = "【武汉城市学院】密码重置通知";
         String content = buildPasswordResetHtml(code, username);
         sendHtmlEmail(to, subject, content);
     }
@@ -75,12 +78,9 @@ public class EmailServiceImpl implements EmailService {
             log.error("邮件发送失败(消息异常): to={}, subject={}, error={}", to, subject, e.getMessage());
             throw new BusinessException(500, "邮件发送失败，请稍后重试");
         } catch (MailException e) {
-            // 处理邮箱地址无效、用户不存在等情况
             String errorMsg = e.getMessage();
             if (errorMsg != null && errorMsg.contains("User not found")) {
                 log.warn("邮件发送失败(邮箱不存在): to={}, subject={}", to, subject);
-                // 由于是异步方法，这里只记录日志，不抛出异常
-                // 用户需要检查邮箱地址是否正确
             } else if (errorMsg != null && errorMsg.contains("Invalid Addresses")) {
                 log.warn("邮件发送失败(无效地址): to={}, subject={}, error={}", to, subject, errorMsg);
             } else {
@@ -91,169 +91,211 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    private String getCommonStyles() {
+        return """
+                body { font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; line-height: 1.6; }
+                .wrapper { max-width: 600px; margin: 20px auto; }
+                .container { background-color: #ffffff; border: 1px solid #e0e0e0; }
+                .header { background-color: #1a5c37; padding: 25px 30px; }
+                .header-title { color: #ffffff; margin: 0; font-size: 18px; font-weight: normal; }
+                .header-subtitle { color: #b8d4c5; font-size: 13px; margin-top: 5px; }
+                .body { padding: 30px; color: #333333; font-size: 14px; }
+                .greeting { margin-bottom: 20px; }
+                .content-block { margin: 25px 0; }
+                .code-box { background-color: #f8f9fa; border: 2px solid #1a5c37; border-radius: 4px; padding: 20px; text-align: center; margin: 20px 0; }
+                .code { font-size: 32px; font-weight: bold; color: #1a5c37; letter-spacing: 6px; font-family: 'Courier New', monospace; }
+                .info-table { width: 100%%; border-collapse: collapse; margin: 20px 0; }
+                .info-table td { padding: 10px 0; border-bottom: 1px solid #eeeeee; font-size: 14px; }
+                .info-table td:first-child { color: #666666; width: 100px; }
+                .info-table td:last-child { color: #333333; }
+                .notice { background-color: #fff8e6; border-left: 4px solid #f0ad4e; padding: 15px; margin: 20px 0; font-size: 13px; color: #856404; }
+                .warning { background-color: #fdf2f2; border-left: 4px solid #dc3545; padding: 15px; margin: 20px 0; font-size: 13px; color: #721c24; }
+                .btn { display: inline-block; background-color: #1a5c37; color: #ffffff !important; text-decoration: none; padding: 12px 30px; border-radius: 4px; font-size: 14px; margin: 15px 0; }
+                .link-fallback { background-color: #f8f9fa; padding: 10px; margin: 15px 0; font-size: 12px; word-break: break-all; color: #666666; border-radius: 4px; }
+                .footer { background-color: #f8f9fa; padding: 20px 30px; border-top: 1px solid #e0e0e0; }
+                .footer-text { font-size: 12px; color: #666666; margin: 5px 0; }
+                .divider { height: 1px; background-color: #e0e0e0; margin: 20px 0; }
+                """;
+    }
+
+    private String getCurrentTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm"));
+    }
+
     private String buildVerificationCodeHtml(String code) {
         return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-                    .header { background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 30px; text-align: center; }
-                    .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
-                    .content { padding: 40px 30px; text-align: center; }
-                    .code { font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px; background-color: #f8f9fa; padding: 20px 40px; border-radius: 8px; display: inline-block; margin: 20px 0; }
-                    .note { color: #6c757d; font-size: 14px; margin-top: 20px; }
-                    .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🎓 WIC教育平台</h1>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>%s</style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <div class="container">
+                            <div class="header">
+                                <h1 class="header-title">武汉城市学院 教务服务平台</h1>
+                                <div class="header-subtitle">City University of Wuhan</div>
+                            </div>
+                            <div class="body">
+                                <div class="greeting">尊敬的用户：</div>
+                                <p>您正在进行身份验证操作，请使用以下验证码完成验证：</p>
+                                <div class="code-box">
+                                    <div class="code">%s</div>
+                                </div>
+                                <table class="info-table">
+                                    <tr><td>有效期限</td><td>10分钟</td></tr>
+                                    <tr><td>发送时间</td><td>%s</td></tr>
+                                </table>
+                                <div class="notice">
+                                    <strong>安全提示：</strong>验证码仅用于本次操作验证，请勿将验证码透露给任何人，包括自称平台工作人员的人。
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p class="footer-text">本邮件由系统自动发送，请勿直接回复。</p>
+                                <p class="footer-text">如有疑问，请联系学校信息技术中心。</p>
+                                <div class="divider"></div>
+                                <p class="footer-text">武汉城市学院 教务服务平台</p>
+                                <p class="footer-text">地址：湖北省武汉市东湖生态旅游风景区黄家大湾1号</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="content">
-                        <h2>您的验证码</h2>
-                        <p>您正在进行账号操作，验证码如下：</p>
-                        <div class="code">%s</div>
-                        <p class="note">验证码有效期为10分钟，请勿将验证码透露给他人。</p>
-                    </div>
-                    <div class="footer">
-                        <p>此邮件由系统自动发送，请勿直接回复。</p>
-                        <p>© 2025 WIC教育平台 版权所有</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(code);
+                </body>
+                </html>
+                """.formatted(getCommonStyles(), code, getCurrentTime());
     }
 
     private String buildActivationEmailHtml(String code, String username) {
         return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-                    .header { background: linear-gradient(135deg, #11998e 0%%, #38ef7d 100%%); padding: 30px; text-align: center; }
-                    .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
-                    .content { padding: 40px 30px; text-align: center; }
-                    .welcome { font-size: 18px; color: #333; margin-bottom: 10px; }
-                    .code { font-size: 36px; font-weight: bold; color: #11998e; letter-spacing: 8px; background-color: #f8f9fa; padding: 20px 40px; border-radius: 8px; display: inline-block; margin: 20px 0; }
-                    .note { color: #6c757d; font-size: 14px; margin-top: 20px; }
-                    .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🎓 WIC教育平台</h1>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>%s</style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <div class="container">
+                            <div class="header">
+                                <h1 class="header-title">武汉城市学院 教务服务平台</h1>
+                                <div class="header-subtitle">账号激活通知</div>
+                            </div>
+                            <div class="body">
+                                <div class="greeting">尊敬的 %s：</div>
+                                <p>感谢您注册武汉城市学院教务服务平台账号。请使用以下验证码完成账号激活：</p>
+                                <div class="code-box">
+                                    <div class="code">%s</div>
+                                </div>
+                                <table class="info-table">
+                                    <tr><td>用户名</td><td>%s</td></tr>
+                                    <tr><td>有效期限</td><td>10分钟</td></tr>
+                                    <tr><td>申请时间</td><td>%s</td></tr>
+                                </table>
+                                <div class="notice">
+                                    <strong>温馨提示：</strong>如非本人操作，请忽略此邮件，您的账号信息不会受到影响。
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p class="footer-text">本邮件由系统自动发送，请勿直接回复。</p>
+                                <p class="footer-text">如有疑问，请联系学校信息技术中心。</p>
+                                <div class="divider"></div>
+                                <p class="footer-text">武汉城市学院 教务服务平台</p>
+                                <p class="footer-text">地址：湖北省武汉市东湖生态旅游风景区黄家大湾1号</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="content">
-                        <p class="welcome">亲爱的 <strong>%s</strong>，欢迎加入WIC教育平台！</p>
-                        <h2>账号激活验证码</h2>
-                        <p>请输入以下验证码完成账号激活：</p>
-                        <div class="code">%s</div>
-                        <p class="note">验证码有效期为10分钟，请尽快完成激活。</p>
-                        <p class="note">如果您没有注册WIC教育平台账号，请忽略此邮件。</p>
-                    </div>
-                    <div class="footer">
-                        <p>此邮件由系统自动发送，请勿直接回复。</p>
-                        <p>© 2025 WIC教育平台 版权所有</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(username, code);
+                </body>
+                </html>
+                """.formatted(getCommonStyles(), username, code, username, getCurrentTime());
     }
-    
+
     private String buildActivationLinkEmailHtml(String activationLink, String username) {
         return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-                    .header { background: linear-gradient(135deg, #11998e 0%%, #38ef7d 100%%); padding: 30px; text-align: center; }
-                    .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
-                    .content { padding: 40px 30px; text-align: center; }
-                    .welcome { font-size: 18px; color: #333; margin-bottom: 10px; }
-                    .btn { display: inline-block; background: linear-gradient(135deg, #11998e 0%%, #38ef7d 100%%); color: #ffffff !important; text-decoration: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; margin: 25px 0; box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4); transition: transform 0.2s; }
-                    .btn:hover { transform: translateY(-2px); }
-                    .link-text { color: #6c757d; font-size: 12px; word-break: break-all; margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
-                    .note { color: #6c757d; font-size: 14px; margin-top: 20px; }
-                    .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🎓 WIC教育平台</h1>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>%s</style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <div class="container">
+                            <div class="header">
+                                <h1 class="header-title">武汉城市学院 教务服务平台</h1>
+                                <div class="header-subtitle">账号激活通知</div>
+                            </div>
+                            <div class="body">
+                                <div class="greeting">尊敬的 %s：</div>
+                                <p>感谢您注册武汉城市学院教务服务平台账号。请点击下方按钮完成账号激活：</p>
+                                <div style="text-align: center; margin: 25px 0;">
+                                    <a href="%s" class="btn">立即激活账号</a>
+                                </div>
+                                <p style="font-size: 13px; color: #666666;">如按钮无法点击，请复制以下链接至浏览器地址栏打开：</p>
+                                <div class="link-fallback">%s</div>
+                                <table class="info-table">
+                                    <tr><td>用户名</td><td>%s</td></tr>
+                                    <tr><td>有效期限</td><td>24小时</td></tr>
+                                    <tr><td>申请时间</td><td>%s</td></tr>
+                                </table>
+                                <div class="notice">
+                                    <strong>温馨提示：</strong>如非本人操作，请忽略此邮件，您的账号信息不会受到影响。
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p class="footer-text">本邮件由系统自动发送，请勿直接回复。</p>
+                                <p class="footer-text">如有疑问，请联系学校信息技术中心。</p>
+                                <div class="divider"></div>
+                                <p class="footer-text">武汉城市学院 教务服务平台</p>
+                                <p class="footer-text">地址：湖北省武汉市东湖生态旅游风景区黄家大湾1号</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="content">
-                        <p class="welcome">亲爱的 <strong>%s</strong>，欢迎加入WIC教育平台！</p>
-                        <h2>🎉 只需一步，激活您的账号</h2>
-                        <p>点击下方按钮立即激活您的账号：</p>
-                        <a href="%s" class="btn">✨ 立即激活账号</a>
-                        <p class="note">如果按钮无法点击，请复制以下链接到浏览器打开：</p>
-                        <p class="link-text">%s</p>
-                        <p class="note">⏰ 链接有效期为24小时，请尽快完成激活。</p>
-                        <p class="note">如果您没有注册WIC教育平台账号，请忽略此邮件。</p>
-                    </div>
-                    <div class="footer">
-                        <p>此邮件由系统自动发送，请勿直接回复。</p>
-                        <p>© 2025 WIC教育平台 版权所有</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(username, activationLink, activationLink);
+                </body>
+                </html>
+                """.formatted(getCommonStyles(), username, activationLink, activationLink, username, getCurrentTime());
     }
 
     private String buildPasswordResetHtml(String code, String username) {
         return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-                    .header { background: linear-gradient(135deg, #fc4a1a 0%%, #f7b733 100%%); padding: 30px; text-align: center; }
-                    .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
-                    .content { padding: 40px 30px; text-align: center; }
-                    .welcome { font-size: 18px; color: #333; margin-bottom: 10px; }
-                    .code { font-size: 36px; font-weight: bold; color: #fc4a1a; letter-spacing: 8px; background-color: #f8f9fa; padding: 20px 40px; border-radius: 8px; display: inline-block; margin: 20px 0; }
-                    .note { color: #6c757d; font-size: 14px; margin-top: 20px; }
-                    .warning { color: #dc3545; font-size: 14px; margin-top: 10px; }
-                    .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🔐 密码重置</h1>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>%s</style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <div class="container">
+                            <div class="header">
+                                <h1 class="header-title">武汉城市学院 教务服务平台</h1>
+                                <div class="header-subtitle">密码重置通知</div>
+                            </div>
+                            <div class="body">
+                                <div class="greeting">尊敬的 %s：</div>
+                                <p>您正在申请重置账号密码，请使用以下验证码完成密码重置：</p>
+                                <div class="code-box">
+                                    <div class="code">%s</div>
+                                </div>
+                                <table class="info-table">
+                                    <tr><td>用户名</td><td>%s</td></tr>
+                                    <tr><td>有效期限</td><td>10分钟</td></tr>
+                                    <tr><td>申请时间</td><td>%s</td></tr>
+                                </table>
+                                <div class="warning">
+                                    <strong>安全警告：</strong>如非本人操作，说明您的邮箱可能存在安全风险，请立即修改邮箱密码并检查账号安全设置。
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <p class="footer-text">本邮件由系统自动发送，请勿直接回复。</p>
+                                <p class="footer-text">如有疑问，请联系学校信息技术中心。</p>
+                                <div class="divider"></div>
+                                <p class="footer-text">武汉城市学院 教务服务平台</p>
+                                <p class="footer-text">地址：湖北省武汉市东湖生态旅游风景区黄家大湾1号</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="content">
-                        <p class="welcome">亲爱的 <strong>%s</strong></p>
-                        <h2>密码重置验证码</h2>
-                        <p>您正在重置密码，验证码如下：</p>
-                        <div class="code">%s</div>
-                        <p class="note">验证码有效期为10分钟。</p>
-                        <p class="warning">⚠️ 如果您没有请求重置密码，请忽略此邮件并确保账号安全。</p>
-                    </div>
-                    <div class="footer">
-                        <p>此邮件由系统自动发送，请勿直接回复。</p>
-                        <p>© 2025 WIC教育平台 版权所有</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(username, code);
+                </body>
+                </html>
+                """.formatted(getCommonStyles(), username, code, username, getCurrentTime());
     }
 }

@@ -28,7 +28,7 @@ public class DepartmentAdminController {
 
     @Autowired
     private DepartmentService departmentService;
-    
+
     @Autowired
     private DepartmentCounselorService counselorService;
 
@@ -61,7 +61,7 @@ public class DepartmentAdminController {
         if (existing == null) {
             return Result.error("学部不存在");
         }
-        
+
         // 更新可修改的字段
         existing.setNameZh(department.getNameZh());
         existing.setNameEn(department.getNameEn());
@@ -70,21 +70,12 @@ public class DepartmentAdminController {
         existing.setLocation(department.getLocation());
         existing.setHotMajorZh(department.getHotMajorZh());
         existing.setHotMajorEn(department.getHotMajorEn());
-        existing.setOnlineCount(department.getOnlineCount());
+        // onlineCount 已改为动态计算，无需手动设置
         existing.setSortOrder(department.getSortOrder());
         existing.setStatus(department.getStatus());
         existing.setUpdatedAt(LocalDateTime.now());
-        
-        departmentService.updateById(existing);
-        return Result.success();
-    }
 
-    @PutMapping("/{id}/online-count")
-    @Operation(summary = "更新在线人数", description = "更新学部在线人数")
-    public Result<Void> updateOnlineCount(
-            @Parameter(description = "学部ID") @PathVariable Long id,
-            @Parameter(description = "在线人数") @RequestParam Integer count) {
-        departmentService.updateOnlineCount(id, count);
+        departmentService.updateById(existing);
         return Result.success();
     }
 
@@ -123,7 +114,7 @@ public class DepartmentAdminController {
         if (department == null) {
             return Result.error("学部不存在");
         }
-        
+
         counselor.setDepartmentId(departmentId);
         counselorService.addCounselor(counselor);
         return Result.success();
@@ -138,7 +129,7 @@ public class DepartmentAdminController {
         if (existing == null) {
             return Result.error("辅导员不存在");
         }
-        
+
         existing.setName(counselor.getName());
         existing.setAvatar(counselor.getAvatar());
         existing.setTitle(counselor.getTitle());
@@ -147,7 +138,7 @@ public class DepartmentAdminController {
         existing.setSortOrder(counselor.getSortOrder());
         existing.setStatus(counselor.getStatus());
         existing.setUpdatedAt(LocalDateTime.now());
-        
+
         counselorService.updateById(existing);
         return Result.success();
     }

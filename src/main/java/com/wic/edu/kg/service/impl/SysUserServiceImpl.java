@@ -10,6 +10,8 @@ import com.wic.edu.kg.mapper.SysUserMapper;
 import com.wic.edu.kg.service.EmailService;
 import com.wic.edu.kg.service.SysUserService;
 import com.wic.edu.kg.service.VerificationCodeService;
+import com.wic.edu.kg.entity.Department;
+import com.wic.edu.kg.mapper.DepartmentMapper;
 import com.wic.edu.kg.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private VerificationCodeService verificationCodeService;
+
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
@@ -468,6 +473,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if (request.getDepartment() != null) {
             user.setDepartment(request.getDepartment());
+            // 自动同步 departmentId
+            syncDepartmentId(user);
         }
         if (request.getMajor() != null) {
             user.setMajor(request.getMajor());
@@ -789,5 +796,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         targetUser.setPassword(passwordEncoder.encode(newPassword));
         targetUser.setUpdatedAt(LocalDateTime.now());
         this.updateById(targetUser);
+    }
+
+    /**
+     * 根据 department 名称自动同步 departmentId
+     */
+    private void syncDepartmentId(SysUser user) {
+        if (user.getDepartment() == null || user.getDepartment().isEmpty()) {
+            user.setDepartmentId(null);
+            return;
+        }
+        Department dept = departmentMapper.selectOne(new LambdaQueryWrapper<Department>()
+                .eq(Department::getNameZh, user.getDepartment()));
+        if (dept != null) {
+            user.setDepartmentId(dept.getId());
+        } else {
+            user.setDepartmentId(null);
+        }
     }
 }

@@ -55,6 +55,12 @@ public class SysUser {
     private String department;
 
     /**
+     * 学部ID（外键）
+     */
+    @TableField("department_id")
+    private Long departmentId;
+
+    /**
      * 专业
      */
     @TableField("major")

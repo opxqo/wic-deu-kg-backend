@@ -42,10 +42,12 @@ public class SecurityConfig {
                                 "/api/auth/send-reset-code",
                                 "/api/auth/reset-password-with-code",
                                 "/api/auth/send-activation-link",
-                                "/api/auth/activate-by-link")
+                                "/api/auth/activate-by-link",
+                                "/api/auth/public/users/card/**")
                         .permitAll()
                         .requestMatchers("/api/food/stores/**", "/api/food/products/*/comments").permitAll() // 美食模块公开接口
                         .requestMatchers("/api/departments/**").permitAll() // 学部模块公开接口
+                        .requestMatchers("/api/public/**").permitAll() // 统一公开接口
                         .requestMatchers("/api/gallery", "/api/gallery/featured", "/api/gallery/categories",
                                 "/api/gallery/{id}")
                         .permitAll() // 图片库公开接口

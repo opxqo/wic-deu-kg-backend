@@ -84,9 +84,11 @@ C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\exception\
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\impl\FoodCommentServiceImpl.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\utils\JwtUtil.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\impl\EmailServiceImpl.java
+C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\UserCardVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\FoodLikeMapper.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\FoodStoreVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\DepartmentService.java
+C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\controller\PublicController.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\controller\AdminController.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\dto\CommentRequest.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\dto\RegisterRequest.java

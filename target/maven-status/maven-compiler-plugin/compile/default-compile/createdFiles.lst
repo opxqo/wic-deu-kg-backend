@@ -18,8 +18,10 @@ com\wic\edu\kg\mapper\FoodCommentMapper.class
 com\wic\edu\kg\service\FoodLikeService.class
 com\wic\edu\kg\config\MyBatisPlusConfig.class
 com\wic\edu\kg\service\GalleryService.class
+com\wic\edu\kg\vo\UserCardVO$UserCardVOBuilder.class
 com\wic\edu\kg\service\impl\FoodStoreServiceImpl$1.class
 com\wic\edu\kg\service\R2StorageService.class
+com\wic\edu\kg\controller\PublicController.class
 com\wic\edu\kg\service\impl\FoodLikeServiceImpl.class
 com\wic\edu\kg\entity\GalleryImage.class
 com\wic\edu\kg\controller\DepartmentAdminController.class
@@ -71,6 +73,7 @@ com\wic\edu\kg\dto\RegisterRequest.class
 com\wic\edu\kg\enums\UserRole.class
 com\wic\edu\kg\dto\UserVO.class
 com\wic\edu\kg\config\SecurityConfig.class
+com\wic\edu\kg\vo\UserCardVO.class
 com\wic\edu\kg\dto\ResetPasswordWithCodeRequest.class
 com\wic\edu\kg\service\ChatMessageService.class
 com\wic\edu\kg\service\EmailService.class

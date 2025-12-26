@@ -2,6 +2,7 @@ package com.wic.edu.kg.controller;
 
 import com.wic.edu.kg.common.Result;
 import com.wic.edu.kg.dto.*;
+import com.wic.edu.kg.vo.UserCardVO;
 import com.wic.edu.kg.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,8 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "通过学号和密码登录，返回JWT令牌和用户信息")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "登录成功",
-                    content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "200", description = "登录成功", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
             @ApiResponse(responseCode = "401", description = "学号或密码错误"),
             @ApiResponse(responseCode = "403", description = "账号未激活或已被禁用")
     })
@@ -44,8 +45,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "用户注册", description = "注册新用户账号，注册后需通过邮箱验证激活")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "注册成功，激活邮件已发送",
-                    content = @Content(schema = @Schema(implementation = UserVO.class))),
+            @ApiResponse(responseCode = "200", description = "注册成功，激活邮件已发送", content = @Content(schema = @Schema(implementation = UserVO.class))),
             @ApiResponse(responseCode = "400", description = "学号/用户名/邮箱已被使用")
     })
     public Result<UserVO> register(@Validated @RequestBody RegisterRequest registerRequest) {
@@ -104,8 +104,7 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(summary = "获取当前用户信息", description = "根据JWT令牌获取当前登录用户的信息")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "获取成功",
-                    content = @Content(schema = @Schema(implementation = UserVO.class))),
+            @ApiResponse(responseCode = "200", description = "获取成功", content = @Content(schema = @Schema(implementation = UserVO.class))),
             @ApiResponse(responseCode = "401", description = "未登录或令牌已过期"),
             @ApiResponse(responseCode = "404", description = "用户不存在")
     })
@@ -221,8 +220,7 @@ public class AuthController {
     @PutMapping("/profile")
     @Operation(summary = "更新个人资料", description = "已登录用户更新自己的个人信息（姓名、邮箱、头像、院系、专业、简介）")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "个人资料更新成功",
-                    content = @Content(schema = @Schema(implementation = UserVO.class))),
+            @ApiResponse(responseCode = "200", description = "个人资料更新成功", content = @Content(schema = @Schema(implementation = UserVO.class))),
             @ApiResponse(responseCode = "400", description = "邮箱已被其他用户使用"),
             @ApiResponse(responseCode = "401", description = "未登录或令牌已过期"),
             @ApiResponse(responseCode = "404", description = "用户不存在")
@@ -259,5 +257,19 @@ public class AuthController {
         req.setAvatar(avatarUrl);
         UserVO user = sysUserService.updateProfile(studentId, req);
         return Result.success("头像上传成功", user);
+    }
+
+    // ==================== 公开信息接口 ====================
+
+    @GetMapping("/public/users/card/{studentId}")
+    @Operation(summary = "获取用户名片", description = "公开发布的用户名片信息，包含姓名、院系、简介等（无需登录）")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "获取成功", content = @Content(schema = @Schema(implementation = UserCardVO.class))),
+            @ApiResponse(responseCode = "404", description = "用户不存在")
+    })
+    public Result<UserCardVO> getUserCard(
+            @Parameter(description = "学号", required = true) @PathVariable String studentId) {
+        UserCardVO userCard = sysUserService.getUserCard(studentId);
+        return Result.success(userCard);
     }
 }

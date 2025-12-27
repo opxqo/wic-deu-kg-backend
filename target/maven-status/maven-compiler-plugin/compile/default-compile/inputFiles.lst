@@ -71,6 +71,7 @@ C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\config\Asy
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\dto\UserVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\FoodStoreMapper.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\controller\FoodController.java
+C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\enums\GalleryCategory.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\SeniorMessageVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\impl\DepartmentServiceImpl.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\entity\FoodLike.java

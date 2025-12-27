@@ -95,12 +95,13 @@ public class PublicController {
     // ==================== 图片库 ====================
 
     @GetMapping("/gallery")
-    @Operation(summary = "获取图片列表", description = "获取已审核通过的图片列表，支持分类筛选")
+    @Operation(summary = "获取图片列表", description = "获取已审核通过的图片列表，支持分类筛选和关键词搜索")
     public Result<Page<GalleryImageVO>> getGalleryImages(
             @Parameter(description = "分类筛选") @RequestParam(required = false) String category,
+            @Parameter(description = "搜索关键词") @RequestParam(required = false) String keyword,
             @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
-        Page<GalleryImageVO> result = galleryService.getApprovedImages(category, page, size, null);
+        Page<GalleryImageVO> result = galleryService.getApprovedImages(category, keyword, page, size, null);
         return Result.success(result);
     }
 

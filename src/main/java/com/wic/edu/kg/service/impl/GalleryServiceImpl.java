@@ -44,14 +44,29 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
     private R2StorageService r2StorageService;
 
     @Override
-    public Page<GalleryImageVO> getApprovedImages(String category, int page, int size, Long currentUserId) {
+    public Page<GalleryImageVO> getApprovedImages(String category, String keyword, int page, int size,
+            Long currentUserId) {
         Page<GalleryImage> pageParam = new Page<>(page, size);
 
         LambdaQueryWrapper<GalleryImage> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GalleryImage::getStatus, 1); // 已审核通过
+
+        // 分类筛选
         if (category != null && !category.isEmpty() && !"all".equals(category)) {
             wrapper.eq(GalleryImage::getCategory, category);
         }
+
+        // 关键词搜索（标题/描述/地点）
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String kw = keyword.trim();
+            wrapper.and(w -> w
+                    .like(GalleryImage::getTitle, kw)
+                    .or()
+                    .like(GalleryImage::getDescription, kw)
+                    .or()
+                    .like(GalleryImage::getLocation, kw));
+        }
+
         wrapper.orderByDesc(GalleryImage::getSortOrder)
                 .orderByDesc(GalleryImage::getCreatedAt);
 
@@ -320,6 +335,24 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
 
     @Override
     @Transactional
+    public int batchReview(List<Long> imageIds, boolean approved, String rejectReason, Long reviewerId) {
+        if (imageIds == null || imageIds.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (Long id : imageIds) {
+            try {
+                reviewImage(id, approved, rejectReason, reviewerId);
+                count++;
+            } catch (Exception e) {
+                log.warn("批量审核图片{}失败: {}", id, e.getMessage());
+            }
+        }
+        return count;
+    }
+
+    @Override
+    @Transactional
     public void deleteImage(Long imageId) {
         GalleryImage image = this.getById(imageId);
         if (image == null) {
@@ -341,6 +374,24 @@ public class GalleryServiceImpl extends ServiceImpl<GalleryImageMapper, GalleryI
 
         // 删除图片记录
         this.removeById(imageId);
+    }
+
+    @Override
+    @Transactional
+    public int batchDelete(List<Long> imageIds) {
+        if (imageIds == null || imageIds.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (Long id : imageIds) {
+            try {
+                deleteImage(id);
+                count++;
+            } catch (Exception e) {
+                log.warn("批量删除图片{}失败: {}", id, e.getMessage());
+            }
+        }
+        return count;
     }
 
     // ========== 辅助方法 ==========

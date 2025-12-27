@@ -47,6 +47,7 @@ com\wic\edu\kg\service\impl\VerificationCodeServiceImpl.class
 com\wic\edu\kg\config\Knife4jConfig.class
 com\wic\edu\kg\mapper\SeniorMessageLikeMapper.class
 com\wic\edu\kg\entity\SeniorMessageLike.class
+com\wic\edu\kg\controller\GalleryUserController$CategoryOption.class
 com\wic\edu\kg\common\Result.class
 com\wic\edu\kg\entity\SysUser.class
 com\wic\edu\kg\dto\LoginResponse.class
@@ -66,6 +67,7 @@ com\wic\edu\kg\controller\FoodAdminController$FoodStats.class
 com\wic\edu\kg\controller\ChatController.class
 com\wic\edu\kg\service\impl\FoodProductServiceImpl.class
 com\wic\edu\kg\dto\GalleryUploadDTO.class
+com\wic\edu\kg\controller\GalleryAdminController$GalleryStats.class
 com\wic\edu\kg\controller\GeoController$GeoCheckResult.class
 com\wic\edu\kg\vo\FoodCommentVO.class
 com\wic\edu\kg\dto\UpdateProfileRequest.class
@@ -92,6 +94,7 @@ com\wic\edu\kg\entity\FoodComment.class
 com\wic\edu\kg\mapper\ChatMessageMapper.class
 com\wic\edu\kg\service\impl\R2StorageServiceImpl.class
 com\wic\edu\kg\config\WebSocketConfig.class
+com\wic\edu\kg\enums\GalleryCategory.class
 com\wic\edu\kg\service\impl\GeoFenceServiceImpl.class
 com\wic\edu\kg\mapper\DepartmentCounselorMapper.class
 com\wic\edu\kg\controller\GeoController$GeoConfigInfo.class

@@ -3,7 +3,9 @@ package com.wic.edu.kg.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wic.edu.kg.dto.*;
+import com.wic.edu.kg.vo.ActivationResultVO;
 import com.wic.edu.kg.vo.UserCardVO;
+import com.wic.edu.kg.vo.VerificationCodeVO;
 import com.wic.edu.kg.entity.SysUser;
 import com.wic.edu.kg.exception.BusinessException;
 import com.wic.edu.kg.mapper.SysUserMapper;
@@ -283,7 +285,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public void sendActivationCode(String email) {
+    public VerificationCodeVO sendActivationCode(String email) {
         // 查找用户
         SysUser user = getByEmail(email);
         if (user == null) {
@@ -304,11 +306,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 生成验证码并发送邮件
         String code = verificationCodeService.generateCode(email, CODE_TYPE_ACTIVATION);
         emailService.sendActivationEmail(email, code, user.getUsername());
+
+        return VerificationCodeVO.builder()
+                .success(true)
+                .message("验证码已发送至您的邮箱，请注意查收")
+                .expireSeconds(600)
+                .cooldownSeconds(60)
+                .maskedEmail(maskEmail(email))
+                .build();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void activateAccount(ActivateAccountRequest request) {
+    public ActivationResultVO activateAccount(ActivateAccountRequest request) {
         // 查找用户
         SysUser user = getByEmail(request.getEmail());
         if (user == null) {
@@ -327,12 +337,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 激活账号
+        LocalDateTime now = LocalDateTime.now();
         user.setStatus(1);
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(now);
         this.updateById(user);
 
         // 删除验证码
         verificationCodeService.removeCode(request.getEmail(), CODE_TYPE_ACTIVATION);
+
+        return ActivationResultVO.builder()
+                .success(true)
+                .message("账号激活成功，欢迎使用武汉城市学院教务服务平台！")
+                .username(user.getUsername())
+                .studentId(user.getStudentId())
+                .email(user.getEmail())
+                .activatedAt(now)
+                .build();
+    }
+
+    /**
+     * 邮箱脱敏处理
+     */
+    private String maskEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return email;
+        }
+        String[] parts = email.split("@");
+        String name = parts[0];
+        String domain = parts[1];
+        if (name.length() <= 2) {
+            return name.charAt(0) + "***@" + domain;
+        }
+        return name.substring(0, 2) + "***@" + domain;
     }
 
     @Override

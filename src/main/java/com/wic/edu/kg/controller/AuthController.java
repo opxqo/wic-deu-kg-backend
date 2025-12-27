@@ -2,7 +2,9 @@ package com.wic.edu.kg.controller;
 
 import com.wic.edu.kg.common.Result;
 import com.wic.edu.kg.dto.*;
+import com.wic.edu.kg.vo.ActivationResultVO;
 import com.wic.edu.kg.vo.UserCardVO;
+import com.wic.edu.kg.vo.VerificationCodeVO;
 import com.wic.edu.kg.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,27 +56,28 @@ public class AuthController {
     }
 
     @PostMapping("/send-activation-code")
-    @Operation(summary = "发送激活验证码", description = "重新发送账号激活验证码到邮箱")
+    @Operation(summary = "发送激活验证码", description = "发送账号激活验证码到用户邮箱，验证码有效期10分钟")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "验证码发送成功"),
+            @ApiResponse(responseCode = "200", description = "验证码发送成功，返回发送详情"),
             @ApiResponse(responseCode = "400", description = "账号已激活或发送过于频繁"),
             @ApiResponse(responseCode = "404", description = "邮箱未注册")
     })
-    public Result<String> sendActivationCode(@RequestParam String email) {
-        sysUserService.sendActivationCode(email);
-        return Result.success("验证码已发送，请查收邮箱");
+    public Result<VerificationCodeVO> sendActivationCode(
+            @Parameter(description = "邮箱地址", required = true, example = "user@example.com") @RequestParam String email) {
+        VerificationCodeVO result = sysUserService.sendActivationCode(email);
+        return Result.success(result);
     }
 
     @PostMapping("/activate")
-    @Operation(summary = "激活账号", description = "使用邮箱验证码激活账号")
+    @Operation(summary = "激活账号", description = "使用邮箱验证码激活账号，验证码有效期10分钟，最多可尝试5次")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "账号激活成功"),
-            @ApiResponse(responseCode = "400", description = "验证码错误或已过期/账号已激活"),
+            @ApiResponse(responseCode = "200", description = "账号激活成功，返回用户信息"),
+            @ApiResponse(responseCode = "400", description = "验证码错误或已过期/账号已激活/尝试次数过多"),
             @ApiResponse(responseCode = "404", description = "邮箱未注册")
     })
-    public Result<String> activateAccount(@Validated @RequestBody ActivateAccountRequest request) {
-        sysUserService.activateAccount(request);
-        return Result.success("账号激活成功，现在可以登录了");
+    public Result<ActivationResultVO> activateAccount(@Validated @RequestBody ActivateAccountRequest request) {
+        ActivationResultVO result = sysUserService.activateAccount(request);
+        return Result.success(result);
     }
 
     @PostMapping("/send-reset-code")

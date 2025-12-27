@@ -65,6 +65,7 @@ com\wic\edu\kg\dto\PageResponse$PageResponseBuilder.class
 com\wic\edu\kg\controller\FoodAdminController$FoodStats.class
 com\wic\edu\kg\controller\ChatController.class
 com\wic\edu\kg\service\impl\FoodProductServiceImpl.class
+com\wic\edu\kg\vo\VerificationCodeVO$VerificationCodeVOBuilder.class
 com\wic\edu\kg\dto\GalleryUploadDTO.class
 com\wic\edu\kg\controller\GalleryAdminController$GalleryStats.class
 com\wic\edu\kg\controller\GeoController$GeoCheckResult.class
@@ -83,6 +84,7 @@ com\wic\edu\kg\dto\UserQueryRequest.class
 com\wic\edu\kg\dto\RegisterRequest.class
 com\wic\edu\kg\enums\UserRole.class
 com\wic\edu\kg\dto\UserVO.class
+com\wic\edu\kg\vo\ActivationResultVO.class
 com\wic\edu\kg\config\SecurityConfig.class
 com\wic\edu\kg\vo\UserCardVO.class
 com\wic\edu\kg\dto\ResetPasswordWithCodeRequest.class
@@ -98,6 +100,7 @@ com\wic\edu\kg\service\impl\GeoFenceServiceImpl.class
 com\wic\edu\kg\mapper\DepartmentCounselorMapper.class
 com\wic\edu\kg\controller\GeoController$GeoConfigInfo.class
 com\wic\edu\kg\mapper\MessageFontMapper.class
+com\wic\edu\kg\vo\ActivationResultVO$ActivationResultVOBuilder.class
 com\wic\edu\kg\service\impl\FoodCommentServiceImpl.class
 com\wic\edu\kg\vo\DepartmentVO$CounselorInfo.class
 com\wic\edu\kg\controller\GalleryController.class
@@ -120,6 +123,7 @@ com\wic\edu\kg\controller\AuthController.class
 com\wic\edu\kg\service\FoodStoreService.class
 com\wic\edu\kg\annotation\RequireRole.class
 com\wic\edu\kg\service\impl\EmailServiceImpl.class
+com\wic\edu\kg\vo\VerificationCodeVO.class
 com\wic\edu\kg\vo\FoodStoreVO.class
 com\wic\edu\kg\controller\DepartmentController.class
 com\wic\edu\kg\config\AsyncConfig.class

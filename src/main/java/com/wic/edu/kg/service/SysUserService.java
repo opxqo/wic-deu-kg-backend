@@ -2,8 +2,10 @@ package com.wic.edu.kg.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wic.edu.kg.dto.*;
-import com.wic.edu.kg.vo.UserCardVO;
 import com.wic.edu.kg.entity.SysUser;
+import com.wic.edu.kg.vo.ActivationResultVO;
+import com.wic.edu.kg.vo.UserCardVO;
+import com.wic.edu.kg.vo.VerificationCodeVO;
 
 public interface SysUserService extends IService<SysUser> {
 
@@ -82,15 +84,17 @@ public interface SysUserService extends IService<SysUser> {
      * 发送激活验证码
      * 
      * @param email 邮箱
+     * @return 验证码发送结果
      */
-    void sendActivationCode(String email);
+    VerificationCodeVO sendActivationCode(String email);
 
     /**
      * 激活账号
      * 
      * @param request 激活请求
+     * @return 激活结果
      */
-    void activateAccount(ActivateAccountRequest request);
+    ActivationResultVO activateAccount(ActivateAccountRequest request);
 
     /**
      * 发送密码重置验证码

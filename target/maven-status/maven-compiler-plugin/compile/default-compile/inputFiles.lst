@@ -60,6 +60,7 @@ C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\im
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\entity\FoodProduct.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\config\Knife4jConfig.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\GalleryLikeMapper.java
+C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\ActivationResultVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\FoodCommentMapper.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\DepartmentCounselorMapper.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\dto\ChangeRoleRequest.java
@@ -93,6 +94,7 @@ C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\dto\ResetP
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\exception\BusinessException.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\impl\FoodCommentServiceImpl.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\mapper\SeniorMessageLikeMapper.java
+C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\VerificationCodeVO.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\utils\JwtUtil.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\service\impl\EmailServiceImpl.java
 C:\Code\AI\WIC.EDU.KG\wic-deu-kg-backend\src\main\java\com\wic\edu\kg\vo\UserCardVO.java

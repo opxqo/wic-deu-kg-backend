@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @Schema(description = "用户公开名片信息")
@@ -32,4 +34,7 @@ public class UserCardVO {
 
     @Schema(description = "角色名称")
     private String roleName;
+
+    @Schema(description = "加入时间")
+    private LocalDateTime joinedAt;
 }

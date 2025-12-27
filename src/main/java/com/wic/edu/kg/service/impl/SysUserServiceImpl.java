@@ -184,6 +184,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .major(user.getMajor())
                 .bio(user.getBio())
                 .roleName(roleName)
+                .joinedAt(user.getCreatedAt())
                 .build();
     }
 

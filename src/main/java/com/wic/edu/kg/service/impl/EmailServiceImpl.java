@@ -96,7 +96,8 @@ public class EmailServiceImpl implements EmailService {
                 body { font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; line-height: 1.6; }
                 .wrapper { max-width: 600px; margin: 20px auto; }
                 .container { background-color: #ffffff; border: 1px solid #e0e0e0; }
-                .header { background-color: #1a5c37; padding: 25px 30px; }
+                .header { background-color: #1a5c37; padding: 25px 30px; text-align: center; }
+                .header-logo { width: 60px; height: 60px; margin-bottom: 10px; }
                 .header-title { color: #ffffff; margin: 0; font-size: 18px; font-weight: normal; }
                 .header-subtitle { color: #b8d4c5; font-size: 13px; margin-top: 5px; }
                 .body { padding: 30px; color: #333333; font-size: 14px; }
@@ -112,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
                 .warning { background-color: #fdf2f2; border-left: 4px solid #dc3545; padding: 15px; margin: 20px 0; font-size: 13px; color: #721c24; }
                 .btn { display: inline-block; background-color: #1a5c37; color: #ffffff !important; text-decoration: none; padding: 12px 30px; border-radius: 4px; font-size: 14px; margin: 15px 0; }
                 .link-fallback { background-color: #f8f9fa; padding: 10px; margin: 15px 0; font-size: 12px; word-break: break-all; color: #666666; border-radius: 4px; }
-                .footer { background-color: #f8f9fa; padding: 20px 30px; border-top: 1px solid #e0e0e0; }
+                .footer { background-color: #f8f9fa; padding: 20px 30px; border-top: 1px solid #e0e0e0; text-align: center; }
                 .footer-text { font-size: 12px; color: #666666; margin: 5px 0; }
                 .divider { height: 1px; background-color: #e0e0e0; margin: 20px 0; }
                 """;
@@ -134,6 +135,7 @@ public class EmailServiceImpl implements EmailService {
                     <div class="wrapper">
                         <div class="container">
                             <div class="header">
+                                <img src="https://r2.wic.edu.kg/images/favicon.svg" alt="校徽" class="header-logo">
                                 <h1 class="header-title">武汉城市学院 教务服务平台</h1>
                                 <div class="header-subtitle">City University of Wuhan</div>
                             </div>
@@ -177,6 +179,7 @@ public class EmailServiceImpl implements EmailService {
                     <div class="wrapper">
                         <div class="container">
                             <div class="header">
+                                <img src="https://r2.wic.edu.kg/images/favicon.svg" alt="校徽" class="header-logo">
                                 <h1 class="header-title">武汉城市学院 教务服务平台</h1>
                                 <div class="header-subtitle">账号激活通知</div>
                             </div>
@@ -221,6 +224,7 @@ public class EmailServiceImpl implements EmailService {
                     <div class="wrapper">
                         <div class="container">
                             <div class="header">
+                                <img src="https://r2.wic.edu.kg/images/favicon.svg" alt="校徽" class="header-logo">
                                 <h1 class="header-title">武汉城市学院 教务服务平台</h1>
                                 <div class="header-subtitle">账号激活通知</div>
                             </div>
@@ -267,6 +271,7 @@ public class EmailServiceImpl implements EmailService {
                     <div class="wrapper">
                         <div class="container">
                             <div class="header">
+                                <img src="https://r2.wic.edu.kg/images/favicon.svg" alt="校徽" class="header-logo">
                                 <h1 class="header-title">武汉城市学院 教务服务平台</h1>
                                 <div class="header-subtitle">密码重置通知</div>
                             </div>

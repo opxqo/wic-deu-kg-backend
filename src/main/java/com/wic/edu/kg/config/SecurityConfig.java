@@ -41,8 +41,6 @@ public class SecurityConfig {
                                 "/api/auth/activate",
                                 "/api/auth/send-reset-code",
                                 "/api/auth/reset-password-with-code",
-                                "/api/auth/send-activation-link",
-                                "/api/auth/activate-by-link",
                                 "/api/auth/public/users/card/**")
                         .permitAll()
                         .requestMatchers("/api/food/stores/**", "/api/food/products/*/comments").permitAll() // 美食模块公开接口

@@ -193,30 +193,6 @@ public class AuthController {
         return Result.success("密码重置成功，请使用新密码登录");
     }
 
-    @PostMapping("/send-activation-link")
-    @Operation(summary = "发送激活链接", description = "发送包含激活链接的邮件到用户邮箱，用户点击链接即可激活账号")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "激活链接发送成功"),
-            @ApiResponse(responseCode = "400", description = "账号已激活或发送过于频繁"),
-            @ApiResponse(responseCode = "404", description = "邮箱未注册")
-    })
-    public Result<String> sendActivationLink(@RequestParam String email) {
-        sysUserService.sendActivationLink(email);
-        return Result.success("激活链接已发送，请查收邮箱并点击链接激活账号");
-    }
-
-    @GetMapping("/activate-by-link")
-    @Operation(summary = "通过链接激活账号", description = "用户点击邮件中的激活链接，系统验证令牌并激活账号")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "账号激活成功"),
-            @ApiResponse(responseCode = "400", description = "激活链接无效或已过期/账号已激活"),
-            @ApiResponse(responseCode = "404", description = "用户不存在")
-    })
-    public Result<String> activateByLink(@RequestParam String token) {
-        sysUserService.activateByLink(token);
-        return Result.success("账号激活成功，现在可以登录了");
-    }
-
     @PutMapping("/profile")
     @Operation(summary = "更新个人资料", description = "已登录用户更新自己的个人信息（姓名、邮箱、头像、院系、专业、简介）")
     @ApiResponses(value = {

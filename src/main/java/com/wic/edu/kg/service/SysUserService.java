@@ -107,20 +107,6 @@ public interface SysUserService extends IService<SysUser> {
     void resetPasswordWithCode(ResetPasswordWithCodeRequest request);
 
     /**
-     * 发送激活链接邮件
-     * 
-     * @param email 邮箱
-     */
-    void sendActivationLink(String email);
-
-    /**
-     * 通过链接激活账号
-     * 
-     * @param token 激活令牌
-     */
-    void activateByLink(String token);
-
-    /**
      * 将实体转换为VO
      * 
      * @param user 用户实体

@@ -384,59 +384,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         verificationCodeService.removeCode(request.getEmail(), CODE_TYPE_RESET_PASSWORD);
     }
 
-    @Override
-    public void sendActivationLink(String email) {
-        // 查找用户
-        SysUser user = getByEmail(email);
-        if (user == null) {
-            throw new BusinessException(404, "该邮箱未注册");
-        }
-
-        // 检查是否已激活
-        if (user.getStatus() != null && user.getStatus() == 1) {
-            throw new BusinessException(400, "该账号已激活，无需重复激活");
-        }
-
-        // 检查发送冷却时间
-        int cooldown = verificationCodeService.getResendCooldown(email, "ACTIVATION_LINK");
-        if (cooldown > 0) {
-            throw new BusinessException(400, "请" + cooldown + "秒后再重新发送");
-        }
-
-        // 生成激活令牌并发送邮件
-        String token = verificationCodeService.generateActivationToken(email);
-        emailService.sendActivationLinkEmail(email, token, user.getUsername());
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void activateByLink(String token) {
-        // 验证令牌并获取邮箱
-        String email = verificationCodeService.verifyActivationToken(token);
-        if (email == null) {
-            throw new BusinessException(400, "激活链接无效或已过期");
-        }
-
-        // 查找用户
-        SysUser user = getByEmail(email);
-        if (user == null) {
-            throw new BusinessException(404, "用户不存在");
-        }
-
-        // 检查是否已激活
-        if (user.getStatus() != null && user.getStatus() == 1) {
-            throw new BusinessException(400, "该账号已激活，无需重复激活");
-        }
-
-        // 激活账号
-        user.setStatus(1);
-        user.setUpdatedAt(LocalDateTime.now());
-        this.updateById(user);
-
-        // 删除令牌
-        verificationCodeService.removeActivationToken(token);
-    }
-
     // ==================== 用户自我管理接口实现 ====================
 
     @Override

@@ -56,7 +56,6 @@ com\wic\edu\kg\vo\FoodProductVO.class
 com\wic\edu\kg\WicEduKgApplication.class
 com\wic\edu\kg\service\impl\SeniorMessageServiceImpl.class
 com\wic\edu\kg\service\impl\FoodStoreServiceImpl.class
-com\wic\edu\kg\service\impl\VerificationCodeServiceImpl$TokenEntry.class
 com\wic\edu\kg\dto\ChangeStatusRequest.class
 com\wic\edu\kg\mapper\SeniorMessageMapper.class
 com\wic\edu\kg\service\impl\VerificationCodeServiceImpl$CodeEntry.class

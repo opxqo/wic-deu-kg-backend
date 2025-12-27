@@ -4,34 +4,29 @@ package com.wic.edu.kg.service;
  * 邮件服务接口
  */
 public interface EmailService {
-    
+
     /**
      * 发送验证码邮件
-     * @param to 收件人邮箱
+     * 
+     * @param to   收件人邮箱
      * @param code 验证码
      */
     void sendVerificationCode(String to, String code);
-    
+
     /**
-     * 发送账号激活邮件（验证码方式）
-     * @param to 收件人邮箱
-     * @param code 激活码
+     * 发送账号激活邮件
+     * 
+     * @param to       收件人邮箱
+     * @param code     激活码
      * @param username 用户名
      */
     void sendActivationEmail(String to, String code, String username);
-    
-    /**
-     * 发送账号激活邮件（链接方式）
-     * @param to 收件人邮箱
-     * @param token 激活令牌
-     * @param username 用户名
-     */
-    void sendActivationLinkEmail(String to, String token, String username);
-    
+
     /**
      * 发送密码重置邮件
-     * @param to 收件人邮箱
-     * @param code 验证码
+     * 
+     * @param to       收件人邮箱
+     * @param code     验证码
      * @param username 用户名
      */
     void sendPasswordResetEmail(String to, String code, String username);

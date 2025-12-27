@@ -11,11 +11,11 @@ spring:
       max-request-size: 20MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wic_edu_kg?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://175.178.102.49:30208/wic_edu_kg?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     # password: mysql_ZZ3k8A
     # password: 3u5rsT7z4S2wPaF1e9860JvtXknMdHAc
-    password: 20050508
+    password: SnBLkH0YX6Oy5d127gclwf4Tet3u9za8
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

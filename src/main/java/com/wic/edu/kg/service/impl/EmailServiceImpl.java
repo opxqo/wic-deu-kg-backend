@@ -49,15 +49,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendActivationLinkEmail(String to, String token, String username) {
-        String subject = "【武汉城市学院】账号激活通知";
-        String activationLink = backendUrl + "/api/auth/activate-by-link?token=" + token;
-        String content = buildActivationLinkEmailHtml(activationLink, username);
-        sendHtmlEmail(to, subject, content);
-    }
-
-    @Override
-    @Async
     public void sendPasswordResetEmail(String to, String code, String username) {
         String subject = "【武汉城市学院】密码重置通知";
         String content = buildPasswordResetHtml(code, username);
@@ -210,53 +201,6 @@ public class EmailServiceImpl implements EmailService {
                 </body>
                 </html>
                 """.formatted(getCommonStyles(), username, code, username, getCurrentTime());
-    }
-
-    private String buildActivationLinkEmailHtml(String activationLink, String username) {
-        return """
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>%s</style>
-                </head>
-                <body>
-                    <div class="wrapper">
-                        <div class="container">
-                            <div class="header">
-                                <img src="https://r2.wic.edu.kg/images/favicon.svg" alt="校徽" class="header-logo">
-                                <h1 class="header-title">武汉城市学院 教务服务平台</h1>
-                                <div class="header-subtitle">账号激活通知</div>
-                            </div>
-                            <div class="body">
-                                <div class="greeting">尊敬的 %s：</div>
-                                <p>感谢您注册武汉城市学院教务服务平台账号。请点击下方按钮完成账号激活：</p>
-                                <div style="text-align: center; margin: 25px 0;">
-                                    <a href="%s" class="btn">立即激活账号</a>
-                                </div>
-                                <p style="font-size: 13px; color: #666666;">如按钮无法点击，请复制以下链接至浏览器地址栏打开：</p>
-                                <div class="link-fallback">%s</div>
-                                <table class="info-table">
-                                    <tr><td>用户名</td><td>%s</td></tr>
-                                    <tr><td>有效期限</td><td>24小时</td></tr>
-                                    <tr><td>申请时间</td><td>%s</td></tr>
-                                </table>
-                                <div class="notice">
-                                    <strong>温馨提示：</strong>如非本人操作，请忽略此邮件，您的账号信息不会受到影响。
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <p class="footer-text">本邮件由系统自动发送，请勿直接回复。</p>
-                                <p class="footer-text">如有疑问，请联系学校信息技术中心。</p>
-                                <div class="divider"></div>
-                                <p class="footer-text">武汉城市学院 教务服务平台</p>
-                                <p class="footer-text">地址：湖北省武汉市东湖生态旅游风景区黄家大湾1号</p>
-                            </div>
-                        </div>
-                    </div>
-                </body>
-                </html>
-                """.formatted(getCommonStyles(), username, activationLink, activationLink, username, getCurrentTime());
     }
 
     private String buildPasswordResetHtml(String code, String username) {

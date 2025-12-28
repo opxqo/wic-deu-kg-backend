@@ -43,4 +43,41 @@ public interface SeniorMessageService extends IService<SeniorMessage> {
      * 获取可用字体列表
      */
     List<MessageFont> getAvailableFonts();
+
+    // ==================== 管理员接口 ====================
+
+    /**
+     * 管理员获取留言列表（支持状态筛选和关键词搜索）
+     */
+    Page<SeniorMessageVO> adminGetMessages(Integer status, String keyword, int page, int size);
+
+    /**
+     * 按状态统计留言数量
+     */
+    long countByStatus(Integer status);
+
+    /**
+     * 审核留言
+     */
+    void reviewMessage(Long messageId, Integer status, String reason);
+
+    /**
+     * 修改留言状态
+     */
+    void updateStatus(Long messageId, Integer status);
+
+    /**
+     * 管理员删除留言
+     */
+    void adminDeleteMessage(Long messageId);
+
+    /**
+     * 批量审核留言
+     */
+    int batchReview(List<Long> messageIds, Integer status, String reason);
+
+    /**
+     * 批量删除留言
+     */
+    int batchDelete(List<Long> messageIds);
 }

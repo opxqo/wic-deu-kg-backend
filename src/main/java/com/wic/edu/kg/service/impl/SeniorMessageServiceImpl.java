@@ -225,4 +225,122 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
 
         return vo;
     }
+
+    // ==================== 管理员接口实现 ====================
+
+    @Override
+    public Page<SeniorMessageVO> adminGetMessages(Integer status, String keyword, int page, int size) {
+        Page<SeniorMessage> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<SeniorMessage> wrapper = new LambdaQueryWrapper<>();
+
+        // 状态筛选
+        if (status != null) {
+            wrapper.eq(SeniorMessage::getStatus, status);
+        }
+
+        // 关键词搜索
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            wrapper.and(w -> w
+                    .like(SeniorMessage::getContent, keyword)
+                    .or()
+                    .like(SeniorMessage::getSignature, keyword));
+        }
+
+        wrapper.orderByDesc(SeniorMessage::getCreatedAt);
+        Page<SeniorMessage> result = this.page(pageParam, wrapper);
+
+        if (result.getRecords().isEmpty()) {
+            return new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        }
+
+        List<Long> fontIds = result.getRecords().stream()
+                .map(SeniorMessage::getFontId).distinct().collect(Collectors.toList());
+        Map<Long, MessageFont> fontMap = batchGetFonts(fontIds);
+
+        Page<SeniorMessageVO> voPage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        voPage.setRecords(result.getRecords().stream()
+                .map(msg -> convertToVO(msg, false, fontMap))
+                .collect(Collectors.toList()));
+
+        return voPage;
+    }
+
+    @Override
+    public long countByStatus(Integer status) {
+        LambdaQueryWrapper<SeniorMessage> wrapper = new LambdaQueryWrapper<>();
+        if (status != null) {
+            wrapper.eq(SeniorMessage::getStatus, status);
+        }
+        return this.count(wrapper);
+    }
+
+    @Override
+    @Transactional
+    public void reviewMessage(Long messageId, Integer status, String reason) {
+        SeniorMessage message = this.getById(messageId);
+        if (message == null) {
+            throw BusinessException.notFound("留言不存在");
+        }
+        message.setStatus(status);
+        message.setUpdatedAt(LocalDateTime.now());
+        this.updateById(message);
+    }
+
+    @Override
+    @Transactional
+    public void updateStatus(Long messageId, Integer status) {
+        SeniorMessage message = this.getById(messageId);
+        if (message == null) {
+            throw BusinessException.notFound("留言不存在");
+        }
+        message.setStatus(status);
+        message.setUpdatedAt(LocalDateTime.now());
+        this.updateById(message);
+    }
+
+    @Override
+    @Transactional
+    public void adminDeleteMessage(Long messageId) {
+        SeniorMessage message = this.getById(messageId);
+        if (message == null) {
+            throw BusinessException.notFound("留言不存在");
+        }
+        // 删除点赞记录
+        likeMapper.delete(new LambdaQueryWrapper<SeniorMessageLike>()
+                .eq(SeniorMessageLike::getMessageId, messageId));
+        // 删除留言
+        this.removeById(messageId);
+    }
+
+    @Override
+    @Transactional
+    public int batchReview(List<Long> messageIds, Integer status, String reason) {
+        if (messageIds == null || messageIds.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (Long id : messageIds) {
+            SeniorMessage message = this.getById(id);
+            if (message != null) {
+                message.setStatus(status);
+                message.setUpdatedAt(LocalDateTime.now());
+                this.updateById(message);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    @Transactional
+    public int batchDelete(List<Long> messageIds) {
+        if (messageIds == null || messageIds.isEmpty()) {
+            return 0;
+        }
+        // 删除点赞记录
+        likeMapper.delete(new LambdaQueryWrapper<SeniorMessageLike>()
+                .in(SeniorMessageLike::getMessageId, messageIds));
+        // 删除留言
+        return this.baseMapper.deleteBatchIds(messageIds);
+    }
 }

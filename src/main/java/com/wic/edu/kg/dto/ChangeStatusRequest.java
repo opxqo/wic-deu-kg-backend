@@ -12,11 +12,10 @@ import lombok.Data;
 @Data
 @Schema(description = "修改用户状态请求")
 public class ChangeStatusRequest {
-    
-    @Schema(description = "用户ID", example = "1", required = true)
-    @NotNull(message = "用户ID不能为空")
+
+    @Schema(description = "用户ID", example = "1", hidden = true)
     private Long userId;
-    
+
     @Schema(description = "新状态：0-未激活，1-正常，2-禁用", example = "1", required = true)
     @NotNull(message = "状态不能为空")
     @Min(value = 0, message = "状态值无效")

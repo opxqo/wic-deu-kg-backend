@@ -67,7 +67,7 @@ public class EmailServiceImpl implements EmailService {
             log.info("邮件发送成功: to={}, subject={}", to, subject);
         } catch (MessagingException e) {
             log.error("邮件发送失败(消息异常): to={}, subject={}, error={}", to, subject, e.getMessage());
-            throw new BusinessException(500, "邮件发送失败，请稍后重试");
+            throw BusinessException.internal("邮件发送失败，请稍后重试");
         } catch (MailException e) {
             String errorMsg = e.getMessage();
             if (errorMsg != null && errorMsg.contains("User not found")) {

@@ -30,4 +30,9 @@ public interface DepartmentService extends IService<Department> {
      * 获取学部用户数（动态计算）
      */
     Integer getUserCountByDepartmentId(Long departmentId);
+
+    /**
+     * 清除学部相关缓存（用户数变更时调用）
+     */
+    void evictDepartmentCache();
 }

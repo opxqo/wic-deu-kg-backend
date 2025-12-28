@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wic.edu.kg.dto.*;
 import com.wic.edu.kg.entity.SysUser;
 import com.wic.edu.kg.vo.ActivationResultVO;
-import com.wic.edu.kg.vo.UserCardVO;
 import com.wic.edu.kg.vo.VerificationCodeVO;
 
 public interface SysUserService extends IService<SysUser> {
@@ -34,12 +33,12 @@ public interface SysUserService extends IService<SysUser> {
     SysUser getByStudentId(String studentId);
 
     /**
-     * 获取用户公开名片信息
+     * 获取用户公开信息（不包含密码）
      * 
      * @param studentId 学号
-     * @return 用户公开名片VO
+     * @return 用户信息VO
      */
-    UserCardVO getUserCard(String studentId);
+    UserVO getPublicUserInfo(String studentId);
 
     /**
      * 根据用户名获取用户
@@ -196,4 +195,11 @@ public interface SysUserService extends IService<SysUser> {
      * @param newPassword      新密码
      */
     void adminResetPassword(String currentStudentId, Long userId, String newPassword);
+
+    /**
+     * 获取有头像的用户列表（按注册时间排序）
+     * 
+     * @return 用户头像信息列表
+     */
+    java.util.List<com.wic.edu.kg.vo.UserAvatarVO> getUsersWithAvatar();
 }

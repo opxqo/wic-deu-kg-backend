@@ -5,11 +5,11 @@ import com.wic.edu.kg.entity.SysUser;
 import com.wic.edu.kg.enums.UserRole;
 import com.wic.edu.kg.exception.BusinessException;
 import com.wic.edu.kg.service.SysUserService;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,29 +22,29 @@ import java.lang.reflect.Method;
  */
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class RoleAspect {
 
-    @Autowired
-    private SysUserService sysUserService;
+    private final SysUserService sysUserService;
 
     @Around("@annotation(com.wic.edu.kg.annotation.RequireRole) || @within(com.wic.edu.kg.annotation.RequireRole)")
     public Object checkRole(ProceedingJoinPoint joinPoint) throws Throwable {
         // 获取当前用户
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() 
+        if (authentication == null || !authentication.isAuthenticated()
                 || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new BusinessException(401, "请先登录");
+            throw BusinessException.unauthorized("请先登录");
         }
 
         String studentId = authentication.getName();
         SysUser user = sysUserService.getByStudentId(studentId);
-        
+
         if (user == null) {
-            throw new BusinessException(401, "用户不存在");
+            throw BusinessException.unauthorized("用户不存在");
         }
-        
+
         if (user.getStatus() == null || user.getStatus() != 1) {
-            throw new BusinessException(403, "账号未激活或已被禁用");
+            throw BusinessException.forbidden("账号未激活或已被禁用");
         }
 
         // 获取要求的角色
@@ -59,7 +59,7 @@ public class RoleAspect {
 
         // 检查权限
         if (!userRole.hasPermission(requiredRole)) {
-            throw new BusinessException(403, "权限不足，需要" + requiredRole.getDescription() + "及以上权限");
+            throw BusinessException.forbidden("权限不足，需要" + requiredRole.getDescription() + "及以上权限");
         }
 
         return joinPoint.proceed();

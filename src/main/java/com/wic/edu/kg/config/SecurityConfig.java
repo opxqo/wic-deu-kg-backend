@@ -3,6 +3,7 @@ package com.wic.edu.kg.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,8 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
+/**
+ * RESTful API 安全配置
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -30,34 +33,53 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/login",
-                                "/api/auth/register",
-                                "/api/auth/check-student-id",
-                                "/api/auth/check-username",
-                                "/api/auth/check-email",
-                                "/api/auth/reset-password",
-                                "/api/auth/send-activation-code",
-                                "/api/auth/activate",
-                                "/api/auth/send-reset-code",
-                                "/api/auth/reset-password-with-code",
-                                "/api/auth/public/users/card/**")
-                        .permitAll()
-                        .requestMatchers("/api/food/stores/**", "/api/food/products/*/comments").permitAll() // 美食模块公开接口
-                        .requestMatchers("/api/departments/**").permitAll() // 学部模块公开接口
-                        .requestMatchers("/api/public/**").permitAll() // 统一公开接口
-                        .requestMatchers("/api/gallery", "/api/gallery/featured", "/api/gallery/categories",
-                                "/api/gallery/{id}")
-                        .permitAll() // 图片库公开接口
-                        .requestMatchers("/ws/**", "/error").permitAll() // Allow websocket
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // Allow
-                                                                                                              // Swagger
-                                                                                                              // UI
+                        // ==================== 认证相关 ====================
+
+                        // 会话管理（登录）
+                        .requestMatchers(HttpMethod.POST, "/api/sessions").permitAll()
+
+                        // 用户注册
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+
+                        // 用户激活和密码重置（无需登录）
+                        .requestMatchers(HttpMethod.PATCH, "/api/users/me/status").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/users/me/password").permitAll()
+
+                        // 验证码
+                        .requestMatchers(HttpMethod.POST, "/api/verification-codes/**").permitAll()
+
+                        // ==================== 公开资源 ====================
+
+                        // 用户公开信息
+                        .requestMatchers(HttpMethod.GET, "/api/users/public/**").permitAll()
+
+                        // 学部（全公开）
+                        .requestMatchers(HttpMethod.GET, "/api/departments/**").permitAll()
+
+                        // 图片库（浏览公开）
+                        .requestMatchers(HttpMethod.GET, "/api/images").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/images/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/image-categories").permitAll()
+
+                        // 店铺和商品（浏览公开）
+                        .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/{id}/comments").permitAll()
+
+                        // 留言板（浏览公开）
+                        .requestMatchers(HttpMethod.GET, "/api/messages").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/messages/fonts").permitAll()
+
+                        // 地理围栏
+                        .requestMatchers("/api/geo/**").permitAll()
+
+                        // ==================== 静态资源与文档 ====================
+                        .requestMatchers("/ws/**", "/error").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/doc.html", "/webjars/**", "/swagger-resources/**", "/favicon.ico")
-                        .permitAll() // Allow Knife4j
-                        .requestMatchers("/api-test.html", "/static/**", "/*.html", "/*.css", "/*.js").permitAll() // Allow
-                                                                                                                   // static
-                                                                                                                   // files
+                        .permitAll()
+                        .requestMatchers("/api-test.html", "/static/**", "/*.html", "/*.css", "/*.js").permitAll()
+
+                        // ==================== 其他接口需认证 ====================
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

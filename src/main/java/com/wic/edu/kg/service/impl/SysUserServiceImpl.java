@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wic.edu.kg.dto.*;
 import com.wic.edu.kg.vo.ActivationResultVO;
-import com.wic.edu.kg.vo.UserCardVO;
 import com.wic.edu.kg.vo.VerificationCodeVO;
 import com.wic.edu.kg.entity.SysUser;
 import com.wic.edu.kg.exception.BusinessException;
@@ -18,11 +17,13 @@ import com.wic.edu.kg.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
@@ -130,7 +131,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUser getByStudentId(String studentId) {
         return this.getOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getStudentId, studentId));
+                .eq(SysUser::getStudentId, studentId)
+                .last("LIMIT 1"), false);
     }
 
     @Override
@@ -155,39 +157,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public UserCardVO getUserCard(String studentId) {
-        SysUser user = getByStudentId(studentId);
-        if (user == null) {
-            throw new BusinessException(404, "用户不存在");
-        }
-
-        // 获取角色名称
-        String roleName = "普通用户";
-        if (user.getRole() != null) {
-            switch (user.getRole()) {
-                case 1:
-                    roleName = "组织者";
-                    break;
-                case 2:
-                    roleName = "管理员";
-                    break;
-                case 3:
-                    roleName = "普通用户";
-                    break;
+    public UserVO getPublicUserInfo(String studentId) {
+        try {
+            log.info("getPublicUserInfo called with studentId: {}", studentId);
+            SysUser user = getByStudentId(studentId);
+            log.info("getByStudentId result: {}", user);
+            if (user == null) {
+                throw new BusinessException(404, "用户不存在");
             }
+            UserVO vo = convertToVO(user);
+            log.info("convertToVO result: {}", vo);
+            return vo;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("getPublicUserInfo error: ", e);
+            throw e;
         }
-
-        return UserCardVO.builder()
-                .studentId(user.getStudentId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .avatar(user.getAvatar())
-                .department(user.getDepartment())
-                .major(user.getMajor())
-                .bio(user.getBio())
-                .roleName(roleName)
-                .joinedAt(user.getCreatedAt())
-                .build();
     }
 
     @Override
@@ -797,5 +783,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         } else {
             user.setDepartmentId(null);
         }
+    }
+
+    @Override
+    public java.util.List<com.wic.edu.kg.vo.UserAvatarVO> getUsersWithAvatar() {
+        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.isNotNull(SysUser::getAvatar)
+                .ne(SysUser::getAvatar, "")
+                .orderByAsc(SysUser::getCreatedAt);
+
+        return this.list(wrapper).stream()
+                .map(user -> new com.wic.edu.kg.vo.UserAvatarVO(user.getStudentId(), user.getAvatar()))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

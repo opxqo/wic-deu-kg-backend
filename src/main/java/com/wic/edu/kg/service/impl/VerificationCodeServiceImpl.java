@@ -1,5 +1,6 @@
 package com.wic.edu.kg.service.impl;
 
+import com.wic.edu.kg.exception.BusinessException;
 import com.wic.edu.kg.service.VerificationCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,7 +45,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         // 检查重发冷却
         int cooldown = getResendCooldown(key, type);
         if (cooldown > 0) {
-            throw new RuntimeException("请等待 " + cooldown + " 秒后再发送");
+            throw new BusinessException(429, "请等待 " + cooldown + " 秒后再发送");
         }
 
         // 生成6位数字验证码
@@ -73,7 +74,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         int attempts = attemptStore.getOrDefault(storeKey, 0);
         if (attempts >= MAX_ATTEMPTS) {
             log.warn("验证码尝试次数过多: key={}, type={}", key, type);
-            throw new RuntimeException("验证码错误次数过多，请重新获取验证码");
+            throw new BusinessException(400, "验证码错误次数过多，请重新获取验证码");
         }
 
         CodeEntry entry = codeStore.get(storeKey);

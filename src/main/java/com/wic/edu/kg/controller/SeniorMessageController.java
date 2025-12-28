@@ -1,7 +1,7 @@
 package com.wic.edu.kg.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.wic.edu.kg.common.Result;
+import com.wic.edu.kg.common.ApiResponse;
 import com.wic.edu.kg.dto.CreateMessageRequest;
 import com.wic.edu.kg.entity.MessageFont;
 import com.wic.edu.kg.entity.SeniorMessage;
@@ -12,19 +12,28 @@ import com.wic.edu.kg.utils.JwtUtil;
 import com.wic.edu.kg.vo.SeniorMessageVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
- * 学长学姐留言板控制器
+ * 留言资源控制器
+ * 
+ * RESTful 设计：
+ * - GET /api/messages - 获取留言列表
+ * - POST /api/messages - 发布留言
+ * - DELETE /api/messages/{id} - 删除留言
+ * - POST /api/messages/{id}/likes - 点赞
+ * - GET /api/messages/fonts - 获取字体列表
+ * - GET /api/users/me/messages - 获取我的留言
  */
 @RestController
-@Tag(name = "学长学姐留言板", description = "留言发布、查看、点赞")
+@Tag(name = "留言资源", description = "学长学姐留言板")
 public class SeniorMessageController {
 
     @Autowired
@@ -36,83 +45,87 @@ public class SeniorMessageController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ========== 公开接口 ==========
+    // ==================== 公开接口 ====================
 
-    @GetMapping("/api/public/messages")
+    @GetMapping("/api/messages")
     @Operation(summary = "获取留言列表", description = "获取已发布的留言列表，支持分页和关键词搜索")
-    public Result<Page<SeniorMessageVO>> getMessages(
+    public ResponseEntity<ApiResponse<Page<SeniorMessageVO>>> getMessages(
             @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "搜索关键词") @RequestParam(required = false) String keyword,
             @RequestHeader(value = "Authorization", required = false) String authorization) {
         Long userId = extractUserId(authorization);
         Page<SeniorMessageVO> result = messageService.getMessages(page, size, keyword, userId);
-        return Result.success(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
-    @GetMapping("/api/public/messages/fonts")
+    @GetMapping("/api/messages/fonts")
     @Operation(summary = "获取可用字体列表", description = "获取所有可用的字体选项")
-    public Result<List<MessageFont>> getFonts() {
-        return Result.success(messageService.getAvailableFonts());
+    public ResponseEntity<ApiResponse<List<MessageFont>>> getFonts() {
+        return ResponseEntity.ok(ApiResponse.ok(messageService.getAvailableFonts()));
     }
 
-    @GetMapping("/api/public/messages/search")
-    @Operation(summary = "搜索留言", description = "根据关键词搜索留言内容或署名")
-    public Result<Page<SeniorMessageVO>> searchMessages(
-            @Parameter(description = "搜索关键词", required = true) @RequestParam String keyword,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
-            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
-            @RequestHeader(value = "Authorization", required = false) String authorization) {
-        Long userId = extractUserId(authorization);
-        Page<SeniorMessageVO> result = messageService.getMessages(page, size, keyword, userId);
-        return Result.success(result);
-    }
-
-    // ========== 用户接口（需登录） ==========
+    // ==================== 需认证接口 ====================
 
     @PostMapping("/api/messages")
     @Operation(summary = "发布留言", description = "发布一条新留言")
-    @ApiResponse(responseCode = "200", description = "发布成功")
-    public Result<SeniorMessage> createMessage(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "发布成功"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "未登录")
+    })
+    public ResponseEntity<ApiResponse<SeniorMessage>> createMessage(
             @RequestHeader("Authorization") String authorization,
             @Valid @RequestBody CreateMessageRequest request) {
         Long userId = getUserId(authorization);
         SeniorMessage message = messageService.createMessage(userId, request);
-        return Result.success(message);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(message));
     }
 
     @DeleteMapping("/api/messages/{id}")
     @Operation(summary = "删除留言", description = "删除自己发布的留言")
-    public Result<Void> deleteMessage(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "删除成功"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "未登录"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "无权删除")
+    })
+    public ResponseEntity<Void> deleteMessage(
             @RequestHeader("Authorization") String authorization,
-            @Parameter(description = "留言ID") @PathVariable Long id) {
+            @Parameter(description = "留言ID", required = true) @PathVariable Long id) {
         Long userId = getUserId(authorization);
         messageService.deleteMessage(userId, id);
-        return Result.success();
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/api/messages/{id}/like")
-    @Operation(summary = "点赞/取消点赞", description = "切换点赞状态")
-    public Result<Integer> toggleLike(
+    @PostMapping("/api/messages/{id}/likes")
+    @Operation(summary = "点赞留言", description = "切换点赞状态")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "点赞成功"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "未登录")
+    })
+    public ResponseEntity<ApiResponse<Integer>> toggleLike(
             @RequestHeader("Authorization") String authorization,
-            @Parameter(description = "留言ID") @PathVariable Long id) {
+            @Parameter(description = "留言ID", required = true) @PathVariable Long id) {
         Long userId = getUserId(authorization);
         int likeCount = messageService.toggleLike(userId, id);
-        return Result.success(likeCount);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(likeCount));
     }
 
-    @GetMapping("/api/messages/my")
+    @GetMapping("/api/users/me/messages")
     @Operation(summary = "获取我的留言", description = "获取当前用户发布的留言列表")
-    public Result<Page<SeniorMessageVO>> getMyMessages(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "获取成功"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "未登录")
+    })
+    public ResponseEntity<ApiResponse<Page<SeniorMessageVO>>> getMyMessages(
             @RequestHeader("Authorization") String authorization,
             @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size) {
         Long userId = getUserId(authorization);
         Page<SeniorMessageVO> result = messageService.getUserMessages(userId, page, size);
-        return Result.success(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
-    // ========== 辅助方法 ==========
+    // ==================== 辅助方法 ====================
 
     private Long getUserId(String authorization) {
         String token = authorization.replace("Bearer ", "");

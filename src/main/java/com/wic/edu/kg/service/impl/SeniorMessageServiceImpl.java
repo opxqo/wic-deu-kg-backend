@@ -100,10 +100,10 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
     public void deleteMessage(Long userId, Long messageId) {
         SeniorMessage message = this.getById(messageId);
         if (message == null) {
-            throw new BusinessException(404, "留言不存在");
+            throw BusinessException.notFound("留言不存在");
         }
         if (!message.getUserId().equals(userId)) {
-            throw new BusinessException(403, "无权删除此留言");
+            throw BusinessException.forbidden("无权删除此留言");
         }
         // 删除点赞记录
         likeMapper.delete(new LambdaQueryWrapper<SeniorMessageLike>()
@@ -117,7 +117,7 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
     public int toggleLike(Long userId, Long messageId) {
         SeniorMessage message = this.getById(messageId);
         if (message == null || message.getStatus() != 1) {
-            throw new BusinessException(404, "留言不存在");
+            throw BusinessException.notFound("留言不存在");
         }
 
         LambdaQueryWrapper<SeniorMessageLike> wrapper = new LambdaQueryWrapper<>();

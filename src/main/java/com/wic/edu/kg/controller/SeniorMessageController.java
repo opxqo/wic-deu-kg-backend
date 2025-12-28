@@ -30,6 +30,7 @@ import java.util.List;
  * - DELETE /api/messages/{id} - 删除留言
  * - POST /api/messages/{id}/likes - 点赞
  * - GET /api/messages/fonts - 获取字体列表
+ * - GET /api/messages/user/{studentId} - 获取指定用户的留言
  * - GET /api/users/me/messages - 获取我的留言
  */
 @RestController
@@ -63,6 +64,28 @@ public class SeniorMessageController {
     @Operation(summary = "获取可用字体列表", description = "获取所有可用的字体选项")
     public ResponseEntity<ApiResponse<List<MessageFont>>> getFonts() {
         return ResponseEntity.ok(ApiResponse.ok(messageService.getAvailableFonts()));
+    }
+
+    @GetMapping("/api/messages/user/{studentId}")
+    @Operation(summary = "获取指定用户的留言", description = "根据学号获取该用户发布的留言列表")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "获取成功"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "用户不存在")
+    })
+    public ResponseEntity<ApiResponse<Page<SeniorMessageVO>>> getUserMessagesByStudentId(
+            @Parameter(description = "学号", required = true) @PathVariable String studentId,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") int size,
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        // 根据学号获取用户
+        SysUser user = sysUserService.getByStudentId(studentId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("NOT_FOUND", "用户不存在", "/api/messages/user/" + studentId));
+        }
+        Long currentUserId = extractUserId(authorization);
+        Page<SeniorMessageVO> result = messageService.getMessagesByUserId(user.getId(), page, size, currentUserId);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     // ==================== 需认证接口 ====================

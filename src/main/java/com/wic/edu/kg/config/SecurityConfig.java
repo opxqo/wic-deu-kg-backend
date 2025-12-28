@@ -68,6 +68,7 @@ public class SecurityConfig {
                         // 留言板（浏览公开）
                         .requestMatchers(HttpMethod.GET, "/api/messages").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/messages/fonts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/messages/user/*").permitAll()
 
                         // 地理围栏
                         .requestMatchers("/api/geo/**").permitAll()

@@ -181,6 +181,36 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
                 .orderByAsc(MessageFont::getSortOrder));
     }
 
+    @Override
+    public Page<SeniorMessageVO> getMessagesByUserId(Long userId, int page, int size, Long currentUserId) {
+        Page<SeniorMessage> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<SeniorMessage> wrapper = new LambdaQueryWrapper<>();
+        // 只返回该用户已发布的留言
+        wrapper.eq(SeniorMessage::getUserId, userId)
+                .eq(SeniorMessage::getStatus, 1)
+                .orderByDesc(SeniorMessage::getCreatedAt);
+        Page<SeniorMessage> result = this.page(pageParam, wrapper);
+
+        if (result.getRecords().isEmpty()) {
+            return new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        }
+
+        List<Long> messageIds = result.getRecords().stream()
+                .map(SeniorMessage::getId).collect(Collectors.toList());
+        List<Long> fontIds = result.getRecords().stream()
+                .map(SeniorMessage::getFontId).distinct().collect(Collectors.toList());
+
+        Set<Long> likedIds = batchGetLikedIds(currentUserId, messageIds);
+        Map<Long, MessageFont> fontMap = batchGetFonts(fontIds);
+
+        Page<SeniorMessageVO> voPage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        voPage.setRecords(result.getRecords().stream()
+                .map(msg -> convertToVO(msg, likedIds.contains(msg.getId()), fontMap))
+                .collect(Collectors.toList()));
+
+        return voPage;
+    }
+
     // ========== 辅助方法 ==========
 
     private Set<Long> batchGetLikedIds(Long userId, List<Long> messageIds) {
@@ -194,10 +224,14 @@ public class SeniorMessageServiceImpl extends ServiceImpl<SeniorMessageMapper, S
     }
 
     private Map<Long, MessageFont> batchGetFonts(List<Long> fontIds) {
-        if (fontIds.isEmpty()) {
+        // 过滤掉 null 值
+        List<Long> validFontIds = fontIds.stream()
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
+        if (validFontIds.isEmpty()) {
             return Map.of();
         }
-        List<MessageFont> fonts = fontMapper.selectBatchIds(fontIds);
+        List<MessageFont> fonts = fontMapper.selectBatchIds(validFontIds);
         return fonts.stream().collect(Collectors.toMap(MessageFont::getId, f -> f));
     }
 

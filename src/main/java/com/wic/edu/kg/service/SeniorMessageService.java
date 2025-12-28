@@ -40,6 +40,11 @@ public interface SeniorMessageService extends IService<SeniorMessage> {
     Page<SeniorMessageVO> getUserMessages(Long userId, int page, int size);
 
     /**
+     * 根据用户ID获取留言列表（公开查看，只返回已发布的）
+     */
+    Page<SeniorMessageVO> getMessagesByUserId(Long userId, int page, int size, Long currentUserId);
+
+    /**
      * 获取可用字体列表
      */
     List<MessageFont> getAvailableFonts();

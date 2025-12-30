@@ -70,6 +70,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/messages/fonts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/messages/user/*").permitAll()
 
+                        // 学院动态（浏览公开）
+                        .requestMatchers(HttpMethod.GET, "/api/article").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/article/*").permitAll()
+
                         // 地理围栏
                         .requestMatchers("/api/geo/**").permitAll()
 

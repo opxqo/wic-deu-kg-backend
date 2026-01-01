@@ -1,7 +1,5 @@
 package com.wic.edu.kg.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wic.edu.kg.common.ApiResponse;
 import com.wic.edu.kg.service.SysConfigService;
 import com.wic.edu.kg.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -36,8 +34,6 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
 
     @Value("${jwt.header}")
     private String tokenHeader;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 维护模式下也允许访问的路径
     private static final Set<String> ALLOWED_PATHS = Set.of(
@@ -110,11 +106,11 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        ApiResponse<?> apiResponse = ApiResponse.error(
-                "SERVICE_UNAVAILABLE",
-                "系统维护中，请稍后再试",
+        // 直接构建 JSON 字符串避免 ObjectMapper 序列化 LocalDateTime 的问题
+        String json = String.format(
+                "{\"code\":\"SERVICE_UNAVAILABLE\",\"message\":\"系统维护中，请稍后再试\",\"path\":\"%s\",\"success\":false}",
                 path);
 
-        objectMapper.writeValue(response.getOutputStream(), apiResponse);
+        response.getWriter().write(json);
     }
 }

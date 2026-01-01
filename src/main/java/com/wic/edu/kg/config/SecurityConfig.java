@@ -74,6 +74,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/article").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/article/*").permitAll()
 
+                        // 数据库备份（临时公开测试，测试完成后删除）
+                        .requestMatchers("/api/admin/database/**").permitAll()
+
+                        // 日志查询（临时公开测试，测试完成后删除）
+                        .requestMatchers("/api/admin/logs/**").permitAll()
+
+                        // 系统配置（临时公开测试，测试完成后删除）
+                        .requestMatchers("/api/admin/config/**").permitAll()
+
                         // 地理围栏
                         .requestMatchers("/api/geo/**").permitAll()
 

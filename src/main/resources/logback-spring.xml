@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 内存日志Appender -->
+    <appender name="IN_MEMORY" class="com.wic.edu.kg.config.InMemoryLogAppender"/>
+
+    <!-- 应用日志级别 -->
+    <logger name="com.wic.edu.kg" level="DEBUG"/>
+    
+    <!-- MyBatis SQL日志 -->
+    <logger name="org.apache.ibatis" level="INFO"/>
+    <logger name="org.mybatis" level="INFO"/>
+    
+    <!-- Spring日志 -->
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.web" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="IN_MEMORY"/>
+    </root>
+</configuration>

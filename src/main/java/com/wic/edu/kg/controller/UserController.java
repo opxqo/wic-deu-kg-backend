@@ -2,6 +2,7 @@ package com.wic.edu.kg.controller;
 
 import com.wic.edu.kg.common.ApiResponse;
 import com.wic.edu.kg.dto.*;
+import com.wic.edu.kg.service.SysConfigService;
 import com.wic.edu.kg.service.SysUserService;
 import com.wic.edu.kg.vo.ActivationResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,9 @@ public class UserController {
         @Autowired
         private SysUserService sysUserService;
 
+        @Autowired
+        private SysConfigService sysConfigService;
+
         // ==================== 公开接口 ====================
 
         @PostMapping
@@ -56,9 +60,16 @@ public class UserController {
         @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
                         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "注册成功，激活邮件已发送", content = @Content(schema = @Schema(implementation = UserVO.class))),
                         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "请求参数错误"),
+                        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "注册功能已关闭"),
                         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "学号/用户名/邮箱已存在")
         })
         public ResponseEntity<ApiResponse<UserVO>> register(@Validated @RequestBody RegisterRequest request) {
+                // 检查是否开放注册
+                if (!sysConfigService.isOpenRegistration()) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                        .body(ApiResponse.error("REGISTRATION_CLOSED", "系统暂不开放注册，请联系管理员",
+                                                        "/api/users"));
+                }
                 UserVO user = sysUserService.register(request);
                 return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(user));
         }
